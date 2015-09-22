@@ -93,8 +93,18 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
     	// Get versions
         $versions = $client->api('version')->all($data['proj']);
 	    // Get info for each version
-        echo "PROJ INFO <br>";
-        print_r($projInfo);
+        //echo "PROJ INFO <br>";
+        //print_r($projInfo);
+        // Begin Renderer of Project Info
+        $projName = $data['proj'];
+        echo '<p style="background-color:#3498db;color:white;">NOM_PROJET = ' . $projName . '</p>';
+        $projDesc = $projInfo['project']['description'];
+        echo '<p>DESCRIPTION = ' . $projDesc . '</p>';
+        $projHome = $projInfo['project']['homepage'];
+        echo '<p><a href='.$projHome.'>Homepage</a>';
+        $projParent = $projInfo['project']['parent'];
+        $nameParent = $projParent['name'];
+        echo '<p>Parent Project : '.$nameParent.'<a href='.$url.'/projects/'.$nameParent.'>GOTO</a></p>';
 	    echo "<br>ALL VERSIONS <br>";
 	    for($i = 0; $i < count($versions['versions']); $i++) {
 	        $foundVersion = $versions['versions'][$i];
@@ -124,7 +134,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
         // Get Memberships & Roles of project
         // Get Roles
         echo "ROLES <br>";
-        $roles = $client->api('role')->listing();
+        $roles = $client->api('role')->all();
         print_r($roles);
         // Get members
         echo "<br>MEMBERS <br>";
@@ -135,8 +145,10 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             print_r($memberFound);
             $projUser = $memberFound['user']['name'];
             for($r = 0; $r <count($memberFound['roles']); $r++) {
-                $selectRole = $memberFound['roles'][$r]['id'];
-                print_r($selectRole);
+                $roleId = $memberFound['roles'][$r]['id'];
+                print_r($roleId);
+                $membRole = $roles[$roleId];
+                print_r($membRole);
             }
             $projRole = $memberFound['roles']['0']['name'];
             echo "Utilisateur : $projUser -- $projRole</p>";

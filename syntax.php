@@ -87,47 +87,65 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
         $apiKey = ($this->getConf('redproject.API'));
         $url = $this->getConf('redproject.url');
         $client = new Redmine\Client($url, $apiKey);
-	// Get the project info
+    	// Get Project Info
         $projId = $client->api('project')->getIdByName($data['proj']);
         $projInfo = $client->api('project')->show($projId);
-	// Get versions
+    	// Get versions
         $versions = $client->api('version')->all($data['proj']);
-	// Get info for each version ?
-        //$versionInfo = $client->api('version')->show(1);
+	    // Get info for each version
         echo "PROJ INFO <br>";
         print_r($projInfo);
-	echo "<br>ALL VERSIONS <br>";
-	for($i = 0; $i < count($versions['versions']); $i++) {
-	    $foundVersion = $versions['versions'][$i];
-	    echo "<br>--- Version $foundVersion[name] :<br>";
-	    print_r($foundVersion);
-	    echo "<br>";
-	    $issue = $client->api('issue')->all(array(
+	    echo "<br>ALL VERSIONS <br>";
+	    for($i = 0; $i < count($versions['versions']); $i++) {
+	        $foundVersion = $versions['versions'][$i];
+	        echo "--- Version $foundVersion[name] :<br>";
+	        print_r($foundVersion);
+	        echo "<br>";
+	        $issueTotal = $client->api('issue')->all(array(
                 'project_id' => $projId,
                 'status_id' => '*',
                 'fixed_version_id' => $foundVersion['id'],
                 'limit' => 1
                 ));
-	    // print_r($issue);
-	    $nbIssue = $issue['total_count'];
-	    echo "<p>#Issue(s) : $nbIssue</p>";
-	}
-	//print_r($v);	
-        //print_r($i);
+	        // print_r($issue);
+	        $nbIssue = $issueTotal['total_count'];
+	        echo "<p>#Total Issue(s) : $nbIssue";
+            $issueOpen = $client->api('issue')->all(array(
+                'project_id' => $projId,
+                'status_id' => 'open',
+                'fixed_version_id' => $foundVersion['id'],
+                'limit' => 1
+                ));
+            // print_r($issue);
+            $nbIssue = $issueOpen['total_count'];
+            echo "<br>#Issue(s) Ouvertes : $nbIssue</p>";
+	    }
 	    echo "<br>";
-            //if($foundStatus['id'] == $myStatusId) {
-            // Get is_closed value
-            //    $isClosed = $foundStatus['is_closed'];
-            //}
-        
-	
-	//print_r($versions);
-        echo "<br>TEST API<br>";
-        print_r($versionInfo);
-        echo "<br>TEST API <br>";
-        print_r($issue['total_count']);
-
-        
+        // Get Memberships & Roles of project
+        // Get Roles
+        echo "ROLES <br>";
+        $roles = $client->api('role')->listing();
+        print_r($roles);
+        // Get members
+        echo "<br>MEMBERS <br>";
+        $members = $client->api('membership')->all($projId);
+        for($m = 0; $m <count($members['memberships']); $m++) {
+            echo "<p>---- Membres -----";
+            $memberFound = $members['memberships'][$m];
+            print_r($memberFound);
+            $projUser = $memberFound['user']['name'];
+            for($r = 0; $r <count($memberFound['roles']); $r++) {
+                $selectRole = $memberFound['roles'][$r]['id'];
+                print_r($selectRole);
+            }
+            $projRole = $memberFound['roles']['0']['name'];
+            echo "Utilisateur : $projUser -- $projRole</p>";
+        }
+        //print_r($members);
+        //if($foundStatus['id'] == $myStatusId) {
+        // Get is_closed value
+        //    $isClosed = $foundStatus['is_closed'];
+        //}        	
         // Get Id user of the Wiki if Impersonate
         //$view = $this->getConf('redissue.view');
         //if ($view == self::RI_IMPERSONATE) {
@@ -136,7 +154,6 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             // Attempt to collect information with this user
         //    $client->setImpersonateUser($redUser);
         //}
-        $issue = $client->api('issue')->show($data['id']);
     }
     // Dokuwiki Renderer
     function render($mode, $renderer, $data) {	

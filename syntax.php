@@ -88,11 +88,23 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
         $apiKey = ($this->getConf('redproject.API'));
         $url = $this->getConf('redproject.url');
         $client = new Redmine\Client($url, $apiKey);
-        $road = $client->api('project')->all(array(
-                'name'=> $data['proj']
-        ));
-        echo "TEST API";
-        print_r($road);
+        $projId = $client->api('project')->getIdByName($data['proj']);
+        $projInfo = $client->api('project')->show($projId); 
+        $versions = $client->api('version')->all('blackjack');
+        $versionInfo = $client->api('version')->show(6);
+        $issue = $client->api('issue')->all(array(
+                'project_id' => $projId,
+                'status_id' => '*',
+                'fixed_version_id' => 6,
+                'limit' => 1
+                ));
+        echo "TEST APIi <br/>";
+        print_r($projInfo);
+        echo "TEST APIi <br/>";
+        print_r($versionInfo);
+        echo "TEST APIi <br/>";
+        print_r($issue['total_count']);
+
         
         // Get Id user of the Wiki if Impersonate
         //$view = $this->getConf('redissue.view');

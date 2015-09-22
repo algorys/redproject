@@ -90,21 +90,22 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
     	// Get Project Info
         $projId = $client->api('project')->getIdByName($data['proj']);
         $projInfo = $client->api('project')->show($projId);
-    	// Get versions
-        $versions = $client->api('version')->all($data['proj']);
-	    // Get info for each version
-        //echo "PROJ INFO <br>";
-        //print_r($projInfo);
-        // Begin Renderer of Project Info
+        // RENDERER PROJECT INFO
         $projName = $data['proj'];
         echo '<p style="background-color:#3498db;color:white;">NOM_PROJET = ' . $projName . '</p>';
         $projDesc = $projInfo['project']['description'];
-        echo '<p>DESCRIPTION = ' . $projDesc . '</p>';
+        if ($projDesc == ''){
+            echo 'Aucune description pour ce projet.';
+        } else {
+            echo '<p>DESCRIPTION = ' . $projDesc . '</p>';
+        }
         $projHome = $projInfo['project']['homepage'];
         echo '<p><a href='.$projHome.'>Homepage</a>';
         $projParent = $projInfo['project']['parent'];
         $nameParent = $projParent['name'];
         echo '<p>Parent Project : '.$nameParent.'<a href='.$url.'/projects/'.$nameParent.'>GOTO</a></p>';
+        // VERSIONS
+        $versions = $client->api('version')->all($data['proj']);
 	    echo "<br>ALL VERSIONS <br>";
 	    for($i = 0; $i < count($versions['versions']); $i++) {
 	        $foundVersion = $versions['versions'][$i];
@@ -132,40 +133,36 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
 	    }
 	    echo "<br>";
         // Get Memberships & Roles of project
-        // Get Roles
-        echo "ROLES <br>";
-        $roles = $client->api('role')->all();
-        print_r($roles);
-        // Get members
         echo "<br>MEMBERS <br>";
+        // Initialize Array
+        $usersByRole = array();
         $members = $client->api('membership')->all($projId);
+        // Found each Members
         for($m = 0; $m <count($members['memberships']); $m++) {
-            echo "<p>---- Membres -----";
             $memberFound = $members['memberships'][$m];
-            print_r($memberFound);
-            $projUser = $memberFound['user']['name'];
+            $currentUser = $memberFound['user'];
             for($r = 0; $r <count($memberFound['roles']); $r++) {
-                $roleId = $memberFound['roles'][$r]['id'];
-                print_r($roleId);
-                $membRole = $roles[$roleId];
-                print_r($membRole);
+                $currentRole = $memberFound['roles'][$r];
+                //echo "<br /><br /> gettytpe : ".gettype($currentRole)."<br /><br />";
+                $roleId = $currentRole['id'];
+                // If doesn't exist in usersByRole, create it
+                if(!$usersByRole[$roleId]) {
+                    $currentRole['members'] = array($currentUser);
+                    $usersByRole[$roleId] = $currentRole;
+                } 
+                // Else Push to array
+                else {
+                    array_push($usersByRole[$roleId]['members'], $currentUser);
+                }
             }
-            $projRole = $memberFound['roles']['0']['name'];
-            echo "Utilisateur : $projUser -- $projRole</p>";
         }
-        //print_r($members);
-        //if($foundStatus['id'] == $myStatusId) {
-        // Get is_closed value
-        //    $isClosed = $foundStatus['is_closed'];
-        //}        	
-        // Get Id user of the Wiki if Impersonate
-        //$view = $this->getConf('redissue.view');
-        //if ($view == self::RI_IMPERSONATE) {
-        //    $INFO = pageinfo();
-        //    $redUser = $INFO['userinfo']['uid'];
-            // Attempt to collect information with this user
-        //    $client->setImpersonateUser($redUser);
-        //}
+        // Display new array usersByRole
+        foreach($usersByRole as $role => $currentRole) {
+            echo '<p>'.$currentRole['name'].' : ';
+            foreach($currentRole['members'] as $who => $currentUser) {
+                echo '<span> '. $currentUser['name'] ;
+            }
+        }
     }
     // Dokuwiki Renderer
     function render($mode, $renderer, $data) {	

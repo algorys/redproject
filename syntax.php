@@ -1,0 +1,131 @@
+<?php
+/**
+ * Redproject Syntax Plugin: Display Roadmap and other things
+ *
+ * @author Algorys
+ */
+
+if (!defined('DOKU_INC')) die();
+require 'vendor/php-redmine-api/lib/autoload.php';
+
+
+class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
+
+    // Get url of redmine
+    // function _getRedmineUrl($url) {
+	//    return $this->getConf('redproject.url').'/issues/'.$url;
+    //}
+    
+    function _getImgName() {
+        // If empty (False) get the second part
+        return $this->getConf('redproject.img') ?: 'lib/plugins/redproject/images/redmine.png' ;
+    }
+
+    public function getType() {
+        return 'container';
+    }
+    /**
+     * @return string Paragraph type
+     */
+
+    public function getPType() {
+        return 'normal';
+    }
+    // Keep syntax inside plugin
+    function getAllowedTypes() {
+        return array('container', 'baseonly', 'substition','protected','disabled','formatting','paragraphs');
+    }
+
+    public function getSort() {
+        return 198;
+    }
+ 
+    function connectTo($mode) {
+        $this->Lexer->addSpecialPattern('<redproject[^>]*/>', $mode,'plugin_redproject');
+        $this->Lexer->addEntryPattern('<redproject[^>]*>(?=.*</redproject>)', $mode,'plugin_redproject');
+    }
+    function postConnect() {
+        $this->Lexer->addExitPattern('</redproject>', 'plugin_redproject');
+    }
+    // Do the regexp
+    function handle($match, $state, $pos, $handler) {
+        switch($state){
+            case DOKU_LEXER_SPECIAL :
+            case DOKU_LEXER_ENTER :
+                $data = array(
+                        'state'=>$state,
+                        'proj'=> '',
+                        'info'=> ''
+                    );
+                // Looking for id
+                preg_match("/proj *= *(['\"])(.*?)\\1/", $match, $proj);
+                if( count($proj) != 0 ) {
+                    $data['proj'] = $proj[2];
+                    print_r($data['proj']);
+                } else {
+                    return array(
+                            'state'=>$state,
+                            'error'=>true,
+                            'text'=>'##ERROR &lt;redproject&gt;: project name required##'
+                        );
+                }
+                // Looking for text link
+                preg_match("/info *= *(['\"])(.*?)\\1/", $match, $info);
+                if( count($info) != 0 ) {
+                    $data['info'] = $info[2];
+                }
+
+                return $data;
+            case DOKU_LEXER_UNMATCHED :
+                return array('state'=>$state, 'text'=>$match);
+            default:
+                return array('state'=>$state, 'bytepos_end' => $pos + strlen($match));
+        }
+    }
+
+    // Main render_link
+    function _render_project($renderer, $data) {
+        $apiKey = ($this->getConf('redproject.API'));
+        $url = $this->getConf('redproject.url');
+        $client = new Redmine\Client($url, $apiKey);
+        $road = $client->api('project')->all(array(
+                'name'=> $data['proj']
+        ));
+        echo "TEST API";
+        print_r($road);
+        
+        // Get Id user of the Wiki if Impersonate
+        //$view = $this->getConf('redissue.view');
+        //if ($view == self::RI_IMPERSONATE) {
+        //    $INFO = pageinfo();
+        //    $redUser = $INFO['userinfo']['uid'];
+            // Attempt to collect information with this user
+        //    $client->setImpersonateUser($redUser);
+        //}
+        $issue = $client->api('issue')->show($data['id']);
+    }
+    // Dokuwiki Renderer
+    function render($mode, $renderer, $data) {	
+        if($mode != 'xhtml') return false;
+
+        if($data['error']) {
+            $renderer->doc .= $data['text'];
+            return true;
+        }
+        switch($data['state']) {
+            case DOKU_LEXER_SPECIAL :
+                //$this->_render_link($renderer, $data);
+                $this->_render_project($renderer, $data);
+                break;
+            case DOKU_LEXER_ENTER :
+                //$this->_render_link($renderer, $data);
+                break;
+            case DOKU_LEXER_EXIT:
+                //$renderer->doc .= '</div>';
+            case DOKU_LEXER_UNMATCHED :
+                $renderer->doc .= $renderer->_xmlEntities($data['text']);
+                break;
+        }
+        return true;
+    }
+}

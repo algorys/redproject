@@ -1,0 +1,7 @@
+base   redproject
+author Algorys
+email  ttamalfor@gmail.com
+date   2015-08-05
+name   redproject
+desc   display roadmap redmine dynamically
+

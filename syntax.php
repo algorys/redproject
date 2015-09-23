@@ -11,11 +11,6 @@ require 'vendor/php-redmine-api/lib/autoload.php';
 
 class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
 
-    // Get url of redmine
-    // function _getRedmineUrl($url) {
-	//    return $this->getConf('redproject.url').'/issues/'.$url;
-    //}
-    
     function _getImgName() {
         // If empty (False) get the second part
         return $this->getConf('redproject.img') ?: 'lib/plugins/redproject/images/redmine.png' ;
@@ -24,10 +19,10 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
     public function getType() {
         return 'container';
     }
+
     /**
      * @return string Paragraph type
      */
-
     public function getPType() {
         return 'normal';
     }
@@ -91,18 +86,19 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
         $projId = $client->api('project')->getIdByName($data['proj']);
         $projInfo = $client->api('project')->show($projId);
         // RENDERER PROJECT INFO
-        $projName = $data['proj'];
-        echo '<p style="background-color:#3498db;color:white;">NOM_PROJET = ' . $projName . '</p>';
-        $projDesc = $projInfo['project']['description'];
-        if ($projDesc == ''){
-            echo 'Aucune description pour ce projet.';
-        } else {
-            echo '<p>DESCRIPTION = ' . $projDesc . '</p>';
-        }
-        $projHome = $projInfo['project']['homepage'];
-        echo '<p><a href='.$projHome.'>Homepage</a>';
+        $projName = $data['proj'];        
         $projParent = $projInfo['project']['parent'];
         $nameParent = $projParent['name'];
+        $projHome = $projInfo['project']['homepage'];
+        $projDesc = $projInfo['project']['description'];
+        //echo '<p style="background-color:#3498db;color:white;">NOM_PROJET = ' . $projName . '</p>';
+        $renderer->doc .= '<div>' . $projName . ' Subproject of : <a href='.$url.'/projects/'.$nameParent.'>'.$nameParent.'</a> </div>';
+        if ($projDesc == ''){
+            $renderer->doc .= '<div>Description : <p>Aucune description n\'est disponible pour ce projet.</p></div>';
+        } else {
+            $renderer->doc .= '<div>Description : <p> ' . $projDesc . '</p></div>';
+        }
+        echo '<p><a href='.$projHome.'>Homepage</a>';
         echo '<p>Parent Project : '.$nameParent.'<a href='.$url.'/projects/'.$nameParent.'>GOTO</a></p>';
         // VERSIONS
         $versions = $client->api('version')->all($data['proj']);
@@ -143,7 +139,6 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $currentUser = $memberFound['user'];
             for($r = 0; $r <count($memberFound['roles']); $r++) {
                 $currentRole = $memberFound['roles'][$r];
-                //echo "<br /><br /> gettytpe : ".gettype($currentRole)."<br /><br />";
                 $roleId = $currentRole['id'];
                 // If doesn't exist in usersByRole, create it
                 if(!$usersByRole[$roleId]) {
@@ -178,7 +173,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                 $this->_render_project($renderer, $data);
                 break;
             case DOKU_LEXER_ENTER :
-                //$this->_render_link($renderer, $data);
+                $this->_render_project($renderer, $data);
                 break;
             case DOKU_LEXER_EXIT:
                 //$renderer->doc .= '</div>';

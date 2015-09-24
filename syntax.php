@@ -83,15 +83,15 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
         $url = $this->getConf('redproject.url');
         $client = new Redmine\Client($url, $apiKey);
     	// Get Project Info
-        $projId = $client->api('project')->getIdByName($data['proj']);
-        $projInfo = $client->api('project')->show($projId);
+        $proj = $client->api('project')->show($data['proj']);
+        $projId = $proj['project']['id'];
         $projIdent = $projInfo['project']['identifier'];
-        // RENDERER PROJECT INFO
-        $projName = $data['proj'];        
-        $projParent = $projInfo['project']['parent'];
+        $projName = $proj['project']['name'];        
+        $projParent = $proj['project']['parent'];
         $nameParent = $projParent['name'];
-        $projHome = $projInfo['project']['homepage'];
-        $projDesc = $projInfo['project']['description'];
+        $projHome = $proj['project']['homepage'];
+        $projDesc = $proj['project']['description'];
+        // RENDERER PROJECT INFO
 	    // Title
          if($projHome == '') {
             $renderer->doc .= '<div class="title"><img class="title" src="lib/plugins/redproject/images/home.png">' . $projName . '</div>';
@@ -105,11 +105,11 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $projIdParent = $client->api('project')->getIdByName($nameParent);
             $projInfoParent = $client->api('project')->show($projIdParent);
             $projIdentParent = $projInfoParent['project']['identifier'];
-            $renderer->doc .= '<div class="parent"> Subproject of : <a href='.$url.'/projects/'.$projIdentParent.'>'.$nameParent.'</a> </div>';
+            $renderer->doc .= '<div class="parent">' . $this->getLang('subproject') . ' <a href='.$url.'/projects/'.$projIdentParent.'>'.$nameParent.'</a> </div>';
         }
         // Description
         if ($projDesc == ''){
-            $renderer->doc .= '<div class="desc"><h3>Description</h3> <p>Aucune description n\'est disponible pour ce projet.</p></div>';
+            $renderer->doc .= '<div class="desc"><h3>Description</h3> <p>'.$this->getLang('description').'</p></div>';
         } else {
             $renderer->doc .= '<div class="desc"><h3>Description</h3> <p class="desc"> ' . $projDesc . '</p></div>';
         }
@@ -131,8 +131,8 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             // Time Entries
             $createdOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['created_on']);
             $updatedOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['updated_on']);
-            $renderer->doc .= '<div class="descver"><p>Created on : ' . $createdOn->format(DateTime::RFC850) . '</p>';
-            $renderer->doc .= '<p>Updated on : ' . $updatedOn->format(DateTime::RFC850) . '</p>';
+            $renderer->doc .= '<div class="descver"><p>'.$this->getLang('createdon') . $createdOn->format(DateTime::RFC850) . '</p>';
+            $renderer->doc .= '<p>'.$this->getLang('updatedon') . $updatedOn->format(DateTime::RFC850) . '</p>';
             // Issues of Versions
             $issueTotal = $client->api('issue')->all(array(
                 'project_id' => $projId,

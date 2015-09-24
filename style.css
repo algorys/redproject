@@ -11,6 +11,8 @@ div.title {
 img.title {
     padding: 3px;
     float: left;
+    height: 1.0em;
+    width: 1.0em;
 }
 
 div.parent {
@@ -43,12 +45,12 @@ span.version {
 }
 
 a.version {
-    color: white;
     text-decoration: none;
     padding: 2px;
 }
 a.version:hover {
-    color: white;
+    color: #169;
+    text-decoration: underline;
 }
 
 div.descver {
@@ -87,4 +89,8 @@ div.member {
 
 p.member {
     color: black;
+}
+
+p.member span {
+    color: #169;
 }

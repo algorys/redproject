@@ -92,7 +92,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
         $nameParent = $projParent['name'];
         $projHome = $projInfo['project']['homepage'];
         $projDesc = $projInfo['project']['description'];
-	// Title
+	    // Title
          if($projHome == '') {
             $renderer->doc .= '<div class="title"><img class="title" src="lib/plugins/redproject/images/home.png">' . $projName . '</div>';
          } else {
@@ -107,11 +107,6 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $projIdentParent = $projInfoParent['project']['identifier'];
             $renderer->doc .= '<div class="parent"> Subproject of : <a href='.$url.'/projects/'.$projIdentParent.'>'.$nameParent.'</a> </div>';
         }
-        //if($projHome == '') {
-        //    $renderer->doc .= '<p>No HomePage</p>';
-        //} else {
-        //    $renderer->doc .= '<a href='.$projHome.'><img src="lib/plugins/redproject/images/home.png"></a>';
-        //}
         // Description
         if ($projDesc == ''){
             $renderer->doc .= '<div class="desc"><h3>Description</h3> <p>Aucune description n\'est disponible pour ce projet.</p></div>';
@@ -125,8 +120,8 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
         for($i = 0; $i < count($versions['versions']); $i++) {
             $foundVersion = $versions['versions'][$i];
             $versionId = $foundVersion['id'];
-            $renderer->doc .=  '<p class="version"><span class="version"><a class="version" href="'.$url.'/versions/'.$versionId.'">Version ' . $foundVersion['name'] . '</a></span> ';
-            $renderer->doc .=  ' - ' . $foundVersion['description'];
+            $renderer->doc .=  '<p class="version"><span class="version">Version ' . $foundVersion['name'] . '</span> ';
+            $renderer->doc .=  ' - <a class="version" href="'.$url.'/versions/'.$versionId.'">' . $foundVersion['description'] . '</a>';
             // Status of Versions
             if($foundVersion['status'] == 'open') {
                 $renderer->doc .= '<span class="statusop"> "' . $foundVersion['status'] . '"</span></p>';
@@ -184,9 +179,12 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
         // Display new array usersByRole
         $renderer->doc .= '<div class="member">';
         foreach($usersByRole as $role => $currentRole) {
-            $renderer->doc .= '<p>'.$currentRole['name'].' : ';
+            $renderer->doc .= '<p class="member">'.$currentRole['name'].' : ';
             foreach($currentRole['members'] as $who => $currentUser) {
-                $renderer->doc .= '<span> '. $currentUser['name'] . '</span>' ;
+                $userId = $currentUser['id'];
+                $mailCurrentUser = $client->api('user')->show($userId);
+                $mailUser = $mailCurrentUser['user']['mail'];
+                $renderer->doc .= '<a href="mailto:'.$mailUser.'?Subject=Project '.$projName.'"target="_top"><span> '. $currentUser['name'] . '</span></a>' ;
             }
             $renderer->doc .= '</p>';
         }

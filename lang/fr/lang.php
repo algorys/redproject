@@ -5,4 +5,4 @@
 $lang['encoding']   = 'utf-8';
 $lang['direction']  = 'ltr';
 
-
+$lang['membres'] = 'Membres';

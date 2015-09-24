@@ -93,7 +93,11 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
         $projHome = $projInfo['project']['homepage'];
         $projDesc = $projInfo['project']['description'];
 	// Title
-        $renderer->doc .= '<div class="title">' . $projName . '</div>';
+         if($projHome == '') {
+            $renderer->doc .= '<div class="title"><img class="title" src="lib/plugins/redproject/images/home.png">' . $projName . '</div>';
+         } else {
+            $renderer->doc .= '<div class="title"><a href='.$projHome.'><img class="title" src="lib/plugins/redproject/images/home.png"></a><p>' . $projName . '</p></div>';
+        }
         // Parent
         if($projParent == ''){
             $renderer->doc .= '<div class="parent"> no parent project<br></div>';
@@ -103,11 +107,11 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $projIdentParent = $projInfoParent['project']['identifier'];
             $renderer->doc .= '<div class="parent"> Subproject of : <a href='.$url.'/projects/'.$projIdentParent.'>'.$nameParent.'</a> </div>';
         }
-        if($projHome == '') {
-            $renderer->doc .= '<p>No HomePage</p>';
-        } else {
-            $renderer->doc .= '<a href='.$projHome.'><img src="lib/plugins/redproject/images/home.png"></a>';
-        }
+        //if($projHome == '') {
+        //    $renderer->doc .= '<p>No HomePage</p>';
+        //} else {
+        //    $renderer->doc .= '<a href='.$projHome.'><img src="lib/plugins/redproject/images/home.png"></a>';
+        //}
         // Description
         if ($projDesc == ''){
             $renderer->doc .= '<div class="desc"><h3>Description</h3> <p>Aucune description n\'est disponible pour ce projet.</p></div>';
@@ -151,9 +155,11 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             //$nbIssue = $issueOpen['total_count'];
             $diffIssue = $issueTotal['total_count'] - $issueOpen['total_count']; 
             $renderer->doc .= '<a href="' . $url . '/projects/' . $projIdent . '/issues">' . $issueTotal['total_count'] . ' issues (' . $diffIssue . ' closed - ' . $issueOpen['total_count'] . ' open)</a></div>';
+            $renderer->doc .= '<br>';
 	    }
         // MEMBERSHIPS & ROLES
-        $renderer->doc .= '<p>MEMBERS<p>';
+        $langMembers = $this->getLang('membres');
+        $renderer->doc .= '<h3 class="member">'. $langMembers . '</h3>';
         // Initialize Array
         $usersByRole = array();
         $members = $client->api('membership')->all($projId);
@@ -176,12 +182,15 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             }
         }
         // Display new array usersByRole
+        $renderer->doc .= '<div class="member">';
         foreach($usersByRole as $role => $currentRole) {
             $renderer->doc .= '<p>'.$currentRole['name'].' : ';
             foreach($currentRole['members'] as $who => $currentUser) {
-                $renderer->doc .= '<span> '. $currentUser['name'] ;
+                $renderer->doc .= '<span> '. $currentUser['name'] . '</span>' ;
             }
+            $renderer->doc .= '</p>';
         }
+        $renderer->doc .= '</div>';
     }
     // Dokuwiki Renderer
     function render($mode, $renderer, $data) {	

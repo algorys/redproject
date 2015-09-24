@@ -8,6 +8,11 @@ div.title {
     color: white;
 }
 
+img.title {
+    padding: 3px;
+    float: left;
+}
+
 div.parent {
     text-align: right;
     font-weight: bold;
@@ -40,12 +45,23 @@ span.version {
 a.version {
     color: white;
     text-decoration: none;
+    padding: 2px;
 }
 a.version:hover {
     color: white;
 }
+
 div.descver {
     background-color: #F3F9FF;
+}
+
+div.descver p{
+    font-size: 14px;    
+    }
+
+div.descver a {
+    color: #169 !important;
+    font-size: 12px;
 }
 
 span.statusop {
@@ -56,7 +72,19 @@ span.statuscl {
     color:red;
 }
 
-div.descver a {
-    color: #169 !important;
-    font-size: 12px;
+h3.member {
+    background: url('images/group.png') no-repeat 0% 50%;
+    padding-left: 20px;
+    color:#169;
+    text-indent:0.3em;
+
+}
+
+div.member {
+    background-color: #f6f6f6;
+    font-size: 14px;
+}
+
+p.member {
+    color: black;
 }

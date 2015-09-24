@@ -37,9 +37,17 @@ span.version {
     border-radius: 0.3em;
 }
 
+a.version {
+    color: white;
+    text-decoration: none;
+}
+a.version:hover {
+    color: white;
+}
 div.descver {
     background-color: #F3F9FF;
 }
+
 span.statusop {
     color:green;
 }
@@ -48,3 +56,7 @@ span.statuscl {
     color:red;
 }
 
+div.descver a {
+    color: #169 !important;
+    font-size: 12px;
+}

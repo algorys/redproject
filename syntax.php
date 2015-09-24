@@ -94,13 +94,16 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
 	// Title
         $renderer->doc .= '<div class="title">' . $projName . '</div>';
         // Parent
-	if($projParent == ''){
-            $renderer->doc .= '<div class="parent"> no parent project.<br></div>';
-	} else {
-	    $renderer->doc .= '<div class="parent"> Subproject of : <a href='.$url.'/projects/'.$nameParent.'>'.$nameParent.'</a> </div>';        
+        if($projParent == ''){
+            $renderer->doc .= '<div class="parent"> no parent project<br></div>';
+        } else {
+            $renderer->doc .= '<div class="parent"> Subproject of : <a href='.$url.'/projects/'.$nameParent.'>'.$nameParent.'</a> </div>';        
         }
-        //$renderer->doc .= '<br>';
-        $renderer->doc .= '<a href='.$projHome.'>Home</a>';
+        if($projHome == '') {
+            $renderer->doc .= '<p>No HomePage</p>';
+        } else {
+            $renderer->doc .= '<a href='.$projHome.'><img src="lib/plugins/redproject/images/home.png"></a>';
+        }
         // Description
         if ($projDesc == ''){
             $renderer->doc .= '<div class="desc"><h3>Description</h3> <p>Aucune description n\'est disponible pour ce projet.</p></div>';
@@ -110,13 +113,23 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
         // VERSIONS
         $versions = $client->api('version')->all($data['proj']);
         $renderer->doc .= '<h3>Versions</h3>';
-	// Parsing Version
+	    // Parsing Version
         for($i = 0; $i < count($versions['versions']); $i++) {
             $foundVersion = $versions['versions'][$i];
-            $renderer->doc .=  '<p class="version">Version ' . $foundVersion['name'] . ' : ';
-            $renderer->doc .= $foundVersion['description'] . '</p>';
-            $renderer->doc .= '<p>' . $foundVersion['status'] . '</p>';
-            $renderer->doc .= '<p>Created on : ' . $foundVersion['created_on'] . '---' . $foundVersion['updated_on'] . '</p>';
+            $renderer->doc .=  '<p class="version"><span class="version">Version ' . $foundVersion['name'] . ' </span> ';
+            $renderer->doc .=  ' - ' . $foundVersion['description'];
+            // Status of Versions
+            if($foundVersion['status'] == 'open') {
+                $renderer->doc .= '<span class="statusop"> "' . $foundVersion['status'] . '"</span></p>';
+            } else {
+                $renderer->doc .= '<span class="statuscl"> "' . $foundVersion['status'] . '"</span></p>';
+            }
+            // Time Entries
+            $createdOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['created_on']);
+            $updatedOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['updated_on']);
+            $renderer->doc .= '<div class="descver"><p>Created on : ' . $createdOn->format(DateTime::RFC850) . '</p>';
+            $renderer->doc .= '<p>Updated on : ' . $updatedOn->format(DateTime::RFC850) . '</p>';
+            // Issues of Versions
             $issueTotal = $client->api('issue')->all(array(
                 'project_id' => $projId,
                 'status_id' => '*',
@@ -124,15 +137,15 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                 'limit' => 1
                 ));
             // Total issues & open 
-            $renderer->doc .= '<p># Total Issue(s) :' . $issueTotal['total_count'];
             $issueOpen = $client->api('issue')->all(array(
                 'project_id' => $projId,
                 'status_id' => 'open',
                 'fixed_version_id' => $foundVersion['id'],
                 'limit' => 1
                 ));
-            $nbIssue = $issueOpen['total_count'];
-            $renderer->doc .= '<br># Issue(s) Ouvertes :' . $issueOpen['total_count'] . '</p>';
+            //$nbIssue = $issueOpen['total_count'];
+            $diffIssue = $issueTotal['total_count'] - $issueOpen['total_count']; 
+            $renderer->doc .= '<p>' . $issueTotal['total_count'] . ' issues (' . $diffIssue . ' closed - ' . $issueOpen['total_count'] . ' open</p></div>';
 	    }
         // MEMBERSHIPS & ROLES
         $renderer->doc .= '<p>MEMBERS<p>';

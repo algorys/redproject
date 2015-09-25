@@ -7,7 +7,7 @@ This plugin display a roadmap and some other informations of your project in Dok
 
 
 ## Requirements
-Redproject needs [Php-Redmine-API](https://github.com/kbsali/php-redmine-api) to work. Download it inside your shared folder of php, like ``/usr/share/php`` or in the redproject's folder. If you use [redissue](https://www.dokuwiki.org/plugin:redissue) the first option is better. 
+Redproject needs [Php-Redmine-API](https://github.com/kbsali/php-redmine-api) to work. Download it inside your shared folder of php, like ``/usr/share/php`` or in the redproject's folder. If you use [redissue](https://www.dokuwiki.org/plugin:redissue) the first option is better, as you have just to install it one time. 
 ```bash
 $ mkdir vendor
 $ cd vendor
@@ -30,9 +30,10 @@ You can configure the plugin in the Config Manager of DokuWiki :
 * redproject.url : Put your Redmine's url server, without a slash ending. Example : ``http://myredmine.com``
 * redproject.img : Maybe you have a custom icon for your Redmine installation. You can put image'url here. Example : ``http://www.example.com/image.png``
 * redproject.API : Set your Redmine API's key, preference Administrator key.
+
 **NOTE :** currently redproject.view is not integrated !!
 * TODO : redproject.view : Choose the view you want to display. This will depend on the wiki user's access rights in Redmine.
-  * Impersonate : select this if your wiki's users have the same UID as Redmine's users. e.g. : LDAP authentication. Redissue then will manage rights based on private or public projects.
+  * Impersonate : select this if your wiki's users have the same UID as Redmine's users. e.g. : LDAP authentication. Redproject then will manage rights based on private or public projects.
   * Userview : doesn't manage access rights and display issue even if it's in private project.
 
 ## Syntax
@@ -48,9 +49,9 @@ There is two way to use this plugin :
 
 ## Preview
 Here is a preview of redproject :
-TODO : make a capture.
+![](http://s10.postimg.org/cghde082x/redproject.png)
 
-TODO : For further information, see also [Redproject on dokuwiki.org](https://www.dokuwiki.org/plugin:redproject)
+For further information, see also [Redproject on dokuwiki.org](https://www.dokuwiki.org/plugin:redproject)
 
 
 

@@ -61,7 +61,6 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                 preg_match("/proj *= *(['\"])(.*?)\\1/", $match, $proj);
                 if( count($proj) != 0 ) {
                     $data['proj'] = $proj[2];
-                    print_r($data['proj']);
                 } else {
                     return array(
                             'state'=>$state,
@@ -88,21 +87,47 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
         $apiKey = ($this->getConf('redproject.API'));
         $url = $this->getConf('redproject.url');
         $client = new Redmine\Client($url, $apiKey);
+	// Get the project info
         $projId = $client->api('project')->getIdByName($data['proj']);
-        $projInfo = $client->api('project')->show($projId); 
-        $versions = $client->api('version')->all('blackjack');
-        $versionInfo = $client->api('version')->show(6);
+        $projInfo = $client->api('project')->show($projId);
+	// Get versions
+        $versions = $client->api('version')->all($data['proj']);
+	// Get info for each version ?
+        $versionInfo = $client->api('version')->show(1);
         $issue = $client->api('issue')->all(array(
                 'project_id' => $projId,
                 'status_id' => '*',
-                'fixed_version_id' => 6,
+                'fixed_version_id' => 1,
                 'limit' => 1
                 ));
-        echo "TEST APIi <br/>";
+        echo "PROJ INFO <br>";
         print_r($projInfo);
-        echo "TEST APIi <br/>";
+	echo "<br>ALL VERSIONS <br>";
+	for($i = 0; $i < count($versions['versions']); $i++) {
+	    $foundVersion = $versions['versions'][$i];
+	    echo "--- Version $foundVersion[name] :<br>";
+	    print_r($foundVersion);
+	    echo "<br>";
+	    $issue = $client->api('issue')->all(array(
+                'project_id' => $projId,
+                'status_id' => '*',
+                'fixed_version_id' => 1,
+                'limit' => 1
+                ));
+	}
+	//print_r($v);	
+        //print_r($i);
+	    echo "<br>";
+            //if($foundStatus['id'] == $myStatusId) {
+            // Get is_closed value
+            //    $isClosed = $foundStatus['is_closed'];
+            //}
+        
+	
+	//print_r($versions);
+        echo "<br>TEST API<br>";
         print_r($versionInfo);
-        echo "TEST APIi <br/>";
+        echo "<br>TEST API <br>";
         print_r($issue['total_count']);
 
         

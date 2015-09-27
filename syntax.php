@@ -93,27 +93,24 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
 	// Get versions
         $versions = $client->api('version')->all($data['proj']);
 	// Get info for each version ?
-        $versionInfo = $client->api('version')->show(1);
-        $issue = $client->api('issue')->all(array(
-                'project_id' => $projId,
-                'status_id' => '*',
-                'fixed_version_id' => 1,
-                'limit' => 1
-                ));
+        //$versionInfo = $client->api('version')->show(1);
         echo "PROJ INFO <br>";
         print_r($projInfo);
 	echo "<br>ALL VERSIONS <br>";
 	for($i = 0; $i < count($versions['versions']); $i++) {
 	    $foundVersion = $versions['versions'][$i];
-	    echo "--- Version $foundVersion[name] :<br>";
+	    echo "<br>--- Version $foundVersion[name] :<br>";
 	    print_r($foundVersion);
 	    echo "<br>";
 	    $issue = $client->api('issue')->all(array(
                 'project_id' => $projId,
                 'status_id' => '*',
-                'fixed_version_id' => 1,
+                'fixed_version_id' => $foundVersion['id'],
                 'limit' => 1
                 ));
+	    // print_r($issue);
+	    $nbIssue = $issue['total_count'];
+	    echo "<p>#Issue(s) : $nbIssue</p>";
 	}
 	//print_r($v);	
         //print_r($i);

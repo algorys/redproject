@@ -92,40 +92,38 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
         $projHome = $projInfo['project']['homepage'];
         $projDesc = $projInfo['project']['description'];
 	// Title
-        $renderer->doc .= '<div>' . $projName . '</div>';
+        $renderer->doc .= '<div class="title">' . $projName . '</div>';
         // Parent
 	if($projParent == ''){
-            $renderer->doc .= '<div> no parent project.<br></div>';
+            $renderer->doc .= '<div class="parent"> no parent project.<br></div>';
 	} else {
-	    $renderer->doc .= '<div> Subproject of : <a href='.$url.'/projects/'.$nameParent.'>'.$nameParent.'</a> </div>';        
+	    $renderer->doc .= '<div class="parent"> Subproject of : <a href='.$url.'/projects/'.$nameParent.'>'.$nameParent.'</a> </div>';        
         }
+        //$renderer->doc .= '<br>';
+        $renderer->doc .= '<a href='.$projHome.'>Home</a>';
         // Description
         if ($projDesc == ''){
-            $renderer->doc .= '<div>Description : <p>Aucune description n\'est disponible pour ce projet.</p></div>';
+            $renderer->doc .= '<div class="desc"><h3>Description</h3> <p>Aucune description n\'est disponible pour ce projet.</p></div>';
         } else {
-            $renderer->doc .= '<div>Description : <p> ' . $projDesc . '</p></div>';
+            $renderer->doc .= '<div class="desc"><h3>Description</h3> <p class="desc"> ' . $projDesc . '</p></div>';
         }
-        $renderer->doc .= '<p><a href='.$projHome.'>Homepage</a>';
         // VERSIONS
         $versions = $client->api('version')->all($data['proj']);
-        $renderer->doc .= '<div>ALL VERSIONS </div>';
+        $renderer->doc .= '<h3>Versions</h3>';
 	// Parsing Version
         for($i = 0; $i < count($versions['versions']); $i++) {
             $foundVersion = $versions['versions'][$i];
-            $renderer->doc .=  '<p>Version ' . $foundVersion['name'] . ' : ';
-            print_r($foundVersion);
+            $renderer->doc .=  '<p class="version">Version ' . $foundVersion['name'] . ' : ';
             $renderer->doc .= $foundVersion['description'] . '</p>';
             $renderer->doc .= '<p>' . $foundVersion['status'] . '</p>';
             $renderer->doc .= '<p>Created on : ' . $foundVersion['created_on'] . '---' . $foundVersion['updated_on'] . '</p>';
-            echo "<br>";
             $issueTotal = $client->api('issue')->all(array(
                 'project_id' => $projId,
                 'status_id' => '*',
                 'fixed_version_id' => $foundVersion['id'],
                 'limit' => 1
                 ));
-            // print_r($issue);
-            // $nbIssue = $issueTotal['total_count'];
+            // Total issues & open 
             $renderer->doc .= '<p># Total Issue(s) :' . $issueTotal['total_count'];
             $issueOpen = $client->api('issue')->all(array(
                 'project_id' => $projId,
@@ -133,13 +131,11 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                 'fixed_version_id' => $foundVersion['id'],
                 'limit' => 1
                 ));
-            // print_r($issue);
             $nbIssue = $issueOpen['total_count'];
-            $renderer->doc .= '<br>#Issue(s) Ouvertes :' . $nbIssue ;. '</p>';
+            $renderer->doc .= '<br># Issue(s) Ouvertes :' . $issueOpen['total_count'] . '</p>';
 	    }
-	    // echo "<br>";
-        // Get Memberships & Roles of project
-        echo "<br>MEMBERS <br>";
+        // MEMBERSHIPS & ROLES
+        $renderer->doc .= '<p>MEMBERS<p>';
         // Initialize Array
         $usersByRole = array();
         $members = $client->api('membership')->all($projId);
@@ -163,9 +159,9 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
         }
         // Display new array usersByRole
         foreach($usersByRole as $role => $currentRole) {
-            echo '<p>'.$currentRole['name'].' : ';
+            $renderer->doc .= '<p>'.$currentRole['name'].' : ';
             foreach($currentRole['members'] as $who => $currentUser) {
-                echo '<span> '. $currentUser['name'] ;
+                $renderer->doc .= '<span> '. $currentUser['name'] ;
             }
         }
     }

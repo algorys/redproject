@@ -91,32 +91,42 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
         $nameParent = $projParent['name'];
         $projHome = $projInfo['project']['homepage'];
         $projDesc = $projInfo['project']['description'];
-        //echo '<p style="background-color:#3498db;color:white;">NOM_PROJET = ' . $projName . '</p>';
-        $renderer->doc .= '<div>' . $projName . ' Subproject of : <a href='.$url.'/projects/'.$nameParent.'>'.$nameParent.'</a> </div>';
+	// Title
+        $renderer->doc .= '<div>' . $projName . '</div>';
+        // Parent
+	if($projParent == ''){
+            $renderer->doc .= '<div> no parent project.<br></div>';
+	} else {
+	    $renderer->doc .= '<div> Subproject of : <a href='.$url.'/projects/'.$nameParent.'>'.$nameParent.'</a> </div>';        
+        }
+        // Description
         if ($projDesc == ''){
             $renderer->doc .= '<div>Description : <p>Aucune description n\'est disponible pour ce projet.</p></div>';
         } else {
             $renderer->doc .= '<div>Description : <p> ' . $projDesc . '</p></div>';
         }
-        echo '<p><a href='.$projHome.'>Homepage</a>';
-        echo '<p>Parent Project : '.$nameParent.'<a href='.$url.'/projects/'.$nameParent.'>GOTO</a></p>';
+        $renderer->doc .= '<p><a href='.$projHome.'>Homepage</a>';
         // VERSIONS
         $versions = $client->api('version')->all($data['proj']);
-	    echo "<br>ALL VERSIONS <br>";
-	    for($i = 0; $i < count($versions['versions']); $i++) {
-	        $foundVersion = $versions['versions'][$i];
-	        echo "--- Version $foundVersion[name] :<br>";
-	        print_r($foundVersion);
-	        echo "<br>";
-	        $issueTotal = $client->api('issue')->all(array(
+        $renderer->doc .= '<div>ALL VERSIONS </div>';
+	// Parsing Version
+        for($i = 0; $i < count($versions['versions']); $i++) {
+            $foundVersion = $versions['versions'][$i];
+            $renderer->doc .=  '<p>Version ' . $foundVersion['name'] . ' : ';
+            print_r($foundVersion);
+            $renderer->doc .= $foundVersion['description'] . '</p>';
+            $renderer->doc .= '<p>' . $foundVersion['status'] . '</p>';
+            $renderer->doc .= '<p>Created on : ' . $foundVersion['created_on'] . '---' . $foundVersion['updated_on'] . '</p>';
+            echo "<br>";
+            $issueTotal = $client->api('issue')->all(array(
                 'project_id' => $projId,
                 'status_id' => '*',
                 'fixed_version_id' => $foundVersion['id'],
                 'limit' => 1
                 ));
-	        // print_r($issue);
-	        $nbIssue = $issueTotal['total_count'];
-	        echo "<p>#Total Issue(s) : $nbIssue";
+            // print_r($issue);
+            // $nbIssue = $issueTotal['total_count'];
+            $renderer->doc .= '<p># Total Issue(s) :' . $issueTotal['total_count'];
             $issueOpen = $client->api('issue')->all(array(
                 'project_id' => $projId,
                 'status_id' => 'open',
@@ -125,9 +135,9 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                 ));
             // print_r($issue);
             $nbIssue = $issueOpen['total_count'];
-            echo "<br>#Issue(s) Ouvertes : $nbIssue</p>";
+            $renderer->doc .= '<br>#Issue(s) Ouvertes :' . $nbIssue ;. '</p>';
 	    }
-	    echo "<br>";
+	    // echo "<br>";
         // Get Memberships & Roles of project
         echo "<br>MEMBERS <br>";
         // Initialize Array

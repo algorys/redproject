@@ -149,7 +149,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                 ));
             //$nbIssue = $issueOpen['total_count'];
             $diffIssue = $issueTotal['total_count'] - $issueOpen['total_count']; 
-            $renderer->doc .= '<a href="' . $url . '/projects/' . $projIdent . '/issues">' . $issueTotal['total_count'] . ' issues (' . $diffIssue . ' closed - ' . $issueOpen['total_count'] . ' open)</a></div>';
+            $renderer->doc .= '<a href="' . $url . '/projects/' . $projIdent . 'issues">' . $issueTotal['total_count'] . ' issues (' . $diffIssue . ' closed - ' . $issueOpen['total_count'] . ' open)</a></div>';
             $renderer->doc .= '<br>';
 	    }
         // MEMBERSHIPS & ROLES

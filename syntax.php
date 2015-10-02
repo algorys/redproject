@@ -109,7 +109,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             }
             // Parent
             if($projParent == ''){
-                $renderer->doc .= '<div class="parent"> no parent project<br></div>';
+                $renderer->doc .= '<div class="parent">'.$this->getLang('mainproj').'<br></div>';
             } else {
                 $projIdParent = $client->api('project')->getIdByName($nameParent);
                 $projInfoParent = $client->api('project')->show($projIdParent);
@@ -200,7 +200,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $renderer->doc .= '</div>';
         } else {
             $renderer->doc .= '<div class="title"><img class="title" src="lib/plugins/redproject/images/home.png">Projet Privé</div><br>';
-            $renderer->doc .= '<div class="desc"><h3>Information</h3> <p>Vous ne participer pas à ce projet ou vous n\'avez pas les droits requis pour visualiser ces informations.</p></div>';
+            $renderer->doc .= '<div class="desc"><h3>Information</h3>'.$this->getLang('norights').' </p></div>';
 
         }
     }

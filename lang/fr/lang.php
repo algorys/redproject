@@ -5,6 +5,8 @@
 $lang['encoding']   = 'utf-8';
 $lang['direction']  = 'ltr';
 
+$lang['norights']   = 'Vous ne participer pas à ce projet ou vous n\'avez pas les droits requis pour visualiser ces informations.';
+$lang['mainproj']   = 'Projet Principal';
 $lang['subproject'] = 'Sous projet de :';
 $lang['description']= 'Aucune description n\'est disponible pour ce projet.';
 $lang['createdon']  = 'Date de création : ';

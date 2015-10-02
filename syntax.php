@@ -86,8 +86,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
         // Get Id user of the Wiki if Impersonate
         $view = $this->getConf('redproject.view');
         if ($view == self::RI_IMPERSONATE) {
-            $INFO = pageinfo();
-            $redUser = $INFO['userinfo']['uid'];
+            $redUser = $_SERVER['REMOTE_USER'];
             // Attempt to collect information with this user
             $client->setImpersonateUser($redUser);
         }
@@ -200,7 +199,9 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             }
             $renderer->doc .= '</div>';
         } else {
-            $renderer->doc .=  "Accès Interdit !";
+            $renderer->doc .= '<div class="title"><img class="title" src="lib/plugins/redproject/images/home.png">Projet Privé</div><br>';
+            $renderer->doc .= '<div class="desc"><h3>Information</h3> <p>Vous ne participer pas à ce projet ou vous n\'avez pas les droits requis pour visualiser ces informations.</p></div>';
+
         }
     }
     // Dokuwiki Renderer

@@ -30,9 +30,7 @@ You can configure the plugin in the Config Manager of DokuWiki :
 * redproject.url : Put your Redmine's url server, without a slash ending. Example : ``http://myredmine.com``
 * redproject.img : Maybe you have a custom icon for your Redmine installation. You can put image'url here. Example : ``http://www.example.com/image.png``
 * redproject.API : Set your Redmine API's key, preference Administrator key.
-
-**NOTE :** currently redproject.view is not integrated !!
-* TODO : redproject.view : Choose the view you want to display. This will depend on the wiki user's access rights in Redmine.
+* redproject.view : Choose the view you want to display. This will depend on the wiki user's access rights in Redmine.
   * Impersonate : select this if your wiki's users have the same UID as Redmine's users. e.g. : LDAP authentication. Redproject then will manage rights based on private or public projects.
   * Userview : doesn't manage access rights and display issue even if it's in private project.
 

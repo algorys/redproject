@@ -107,11 +107,10 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                 $renderer->doc .= '<div class="title"><img class="title" src="lib/plugins/redproject/images/home.png">' . $projName . '</div>';
              } else { 
                 $renderer->doc .= '<h2>Projet Redmine</h2>';
-                $renderer->doc .= '<div class="title"><img class="title" src="lib/plugins/redproject/images/home.png">' . $projName . '</div>';
                 $renderer->doc .= '<div class="title"><a href='.$projHome.'><img class="title" src="lib/plugins/redproject/images/home.png"></a><p>' . $projName . '</p></div>';
             }
             // Parent
-            if($projParent){
+            if($projParent == ''){
                 $renderer->doc .= '<div class="parent">'.$this->getLang('mainproj').'<br></div>';
             } else {
                 $projIdParent = $client->api('project')->getIdByName($nameParent);
@@ -133,8 +132,8 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
 	        for($i = 0; $i < count($versions['versions']); $i++) {
 		    $foundVersion = $versions['versions'][$i];
 		    $versionId = $foundVersion['id'];
-		    $renderer->doc .=  '<p class="version"><span class="version">Version ' . $foundVersion['name'] . '</span> ';
-		    $renderer->doc .=  ' - <a class="version" href="'.$url.'/versions/'.$versionId.'">' . $foundVersion['description'] . '</a>';
+		    $renderer->doc .=  '<div class="descver"><p class="version"><a class="version" href="'.$url.'/versions/'.$versionId.'"><span class="version">Version ' . $foundVersion['name'] . '</span> ';
+		    $renderer->doc .= $foundVersion['description'] . '</a>';
 		    // Status of Versions
 		    if($foundVersion['status'] == 'open') {
 		        $renderer->doc .= '<span class="statusop"> "' . $foundVersion['status'] . '"</span></p>';
@@ -144,7 +143,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
 		    // Time Entries
 		    $createdOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['created_on']);
 		    $updatedOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['updated_on']);
-		    $renderer->doc .= '<div class="descver"><p>'.$this->getLang('createdon') . $createdOn->format(DateTime::RFC850) . '</p>';
+		    $renderer->doc .= '<p>'.$this->getLang('createdon') . $createdOn->format(DateTime::RFC850) . '</p>';
 		    $renderer->doc .= '<p>'.$this->getLang('updatedon') . $updatedOn->format(DateTime::RFC850) . '</p>';
 		    // Issues of Versions
 		    $issueTotal = $client->api('issue')->all(array(

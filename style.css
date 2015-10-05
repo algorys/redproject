@@ -20,11 +20,7 @@ div.title {
 }
 
 img.title {
-    padding: 3px;
     float: left;
-    height: 1.0em;
-    width: 1.0em;
-    background: rgba(255,255,255,0.6);
     text-decoration: none;
     padding-bottom: 6px
 }
@@ -62,7 +58,7 @@ span.version {
 }
 
 a.version {
-    text-decoration: none;
+    text-decoration: none !important;
     padding: 2px;
 }
 a.version:hover {

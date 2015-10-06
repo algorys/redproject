@@ -1,28 +1,25 @@
-div.map {
-    background:white;
-    display: inline-block;
-}
-
-h2.map {
-    text-align: center;
+h2.title {
     font-family: monospace;
-    color: #3E5B76;
-    font-weight: 200;
+    color: #008cba;
     font-style: oblique; 
+    font-size: large;
 }
 div.title {
-    background-color: #3E5B76;
+    background-color: #008cba;
     text-indent: 1.0em;
     text-transform: uppercase;
     font-family: sans-serif;
     font-size: 24px;
-    color: white;
 }
 
-img.title {
-    float: left;
+a.title {
+    color: white;
     text-decoration: none;
-    padding-bottom: 6px
+}
+img.title {
+    float: right;
+    text-decoration: none;
+    padding-right: 6px
 }
 
 div.parent {
@@ -41,6 +38,8 @@ div.desc {
 }
 p.desc {
     background-color: #f6f6f6;
+    text-align: justify;
+    text-indent: 5%;
 }
 
 p.version {

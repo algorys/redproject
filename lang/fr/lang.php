@@ -11,4 +11,5 @@ $lang['subproject'] = 'Sous projet de :';
 $lang['description']= 'Aucune description n\'est disponible pour ce projet.';
 $lang['createdon']  = 'Date de création : ';
 $lang['updatedon']  = 'Mise à jour le : ';
+$lang['noversion']  = 'Il n\'y a aucune version de disponible pour ce projet';
 $lang['membres']    = 'Membres';

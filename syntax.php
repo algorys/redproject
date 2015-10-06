@@ -99,15 +99,16 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $projParent = $proj['project']['parent'];
             $nameParent = $projParent['name'];
             $projHome = $proj['project']['homepage'];
+            print_r($projHome);
             $projDesc = $proj['project']['description'];
             // RENDERER PROJECT INFO
             // Title
+            $renderer->doc .= '<h2 class="title">Projet Redmine</h2>';
             if($projHome) {
-                $renderer->doc .= '<h2>Projet Redmine</h2>';
-                $renderer->doc .= '<div class="title"><img class="title" src="lib/plugins/redproject/images/home.png">' . $projName . '</div>';
-             } else { 
-                $renderer->doc .= '<h2>Projet Redmine</h2>';
-                $renderer->doc .= '<div class="title"><a href='.$projHome.'><img class="title" src="lib/plugins/redproject/images/home.png"></a><p>' . $projName . '</p></div>';
+                print_r($projHome);
+                $renderer->doc .= '<div class="title"><a href='.$projHome.'><img class="title" src="lib/plugins/redproject/images/home.png"></a><a href="'.$url.'/projects/'.$projIdent.'" class="title">' . $projName . '</a></div>';
+            } else {
+                $renderer->doc .= '<div class="title"><img class="title" src="lib/plugins/redproject/images/home.png"><a href="'.$url.'/projects/'.$projIdent.'" class="title">' . $projName . '</a></div>';
             }
             // Parent
             if($projParent == ''){
@@ -129,41 +130,43 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $renderer->doc .= '<h3>Versions</h3>';
             // Parsing Version
             if($versions) {
-	        for($i = 0; $i < count($versions['versions']); $i++) {
-		    $foundVersion = $versions['versions'][$i];
-		    $versionId = $foundVersion['id'];
-		    $renderer->doc .=  '<div class="descver"><p class="version"><a class="version" href="'.$url.'/versions/'.$versionId.'"><span class="version">Version ' . $foundVersion['name'] . '</span> ';
-		    $renderer->doc .= $foundVersion['description'] . '</a>';
-		    // Status of Versions
-		    if($foundVersion['status'] == 'open') {
-		        $renderer->doc .= '<span class="statusop"> "' . $foundVersion['status'] . '"</span></p>';
-		    } else {
-		        $renderer->doc .= '<span class="statuscl"> "' . $foundVersion['status'] . '"</span></p>';
-		    }
-		    // Time Entries
-		    $createdOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['created_on']);
-		    $updatedOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['updated_on']);
-		    $renderer->doc .= '<p>'.$this->getLang('createdon') . $createdOn->format(DateTime::RFC850) . '</p>';
-		    $renderer->doc .= '<p>'.$this->getLang('updatedon') . $updatedOn->format(DateTime::RFC850) . '</p>';
-		    // Issues of Versions
-		    $issueTotal = $client->api('issue')->all(array(
-		      'project_id' => $projId,
-		      'status_id' => '*',
-		      'fixed_version_id' => $foundVersion['id'],
-		      'limit' => 1
-		      ));
-		    // Total issues & open 
-		    $issueOpen = $client->api('issue')->all(array(
-		      'project_id' => $projId,
-		      'status_id' => 'open',
-		      'fixed_version_id' => $foundVersion['id'],
-		      'limit' => 1
-		       ));
-		    //$nbIssue = $issueOpen['total_count'];
-		    $diffIssue = $issueTotal['total_count'] - $issueOpen['total_count']; 
-		    $renderer->doc .= '<a href="' . $url . '/projects/' . $projIdent . '/issues">' . $issueTotal['total_count'] . ' issues (' . $diffIssue . ' closed - ' . $issueOpen['total_count'] . ' open)</a></div>';
-		    $renderer->doc .= '<br>';
-	        }
+                for($i = 0; $i < count($versions['versions']); $i++) {
+                    $foundVersion = $versions['versions'][$i];
+                    $versionId = $foundVersion['id'];
+                    $renderer->doc .=  '<div class="descver"><p class="version"><a class="version" href="'.$url.'/versions/'.$versionId.'"><span class="version">Version ' . $foundVersion['name'] . '</span> ';
+                    $renderer->doc .= $foundVersion['description'] . '</a>';
+                    // Status of Versions
+                    if($foundVersion['status'] == 'open') {
+                        $renderer->doc .= '<span class="statusop"> "' . $foundVersion['status'] . '"</span></p>';
+                    } else {
+                        $renderer->doc .= '<span class="statuscl"> "' . $foundVersion['status'] . '"</span></p>';
+                    }
+                    // Time Entries
+                    $createdOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['created_on']);
+                    $updatedOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['updated_on']);
+                    $renderer->doc .= '<p>'.$this->getLang('createdon') . $createdOn->format(DateTime::RFC850) . '</p>';
+                    $renderer->doc .= '<p>'.$this->getLang('updatedon') . $updatedOn->format(DateTime::RFC850) . '</p>';
+                    // Issues of Versions
+                    $issueTotal = $client->api('issue')->all(array(
+                      'project_id' => $projId,
+                      'status_id' => '*',
+                      'fixed_version_id' => $foundVersion['id'],
+                      'limit' => 1
+                      ));
+                    // Total issues & open 
+                    $issueOpen = $client->api('issue')->all(array(
+                      'project_id' => $projId,
+                      'status_id' => 'open',
+                      'fixed_version_id' => $foundVersion['id'],
+                      'limit' => 1
+                       ));
+                    //$nbIssue = $issueOpen['total_count'];
+                    $diffIssue = $issueTotal['total_count'] - $issueOpen['total_count']; 
+                    $renderer->doc .= '<a href="' . $url . '/projects/' . $projIdent . '/issues">' . $issueTotal['total_count'] . ' issues (' . $diffIssue . ' closed - ' . $issueOpen['total_count'] . ' open)</a></div>';
+                    $renderer->doc .= '<br>';
+                } 
+            } else {
+                $renderer->doc .= 'div class="descver"><p>' . $this->getLang('noversion') . '</p></div>';
             }
             // MEMBERSHIPS & ROLES
             $langMembers = $this->getLang('membres');

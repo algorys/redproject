@@ -123,11 +123,26 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             } else {
                 $renderer->doc .= '<div class="desc"><h4>Description</h4> <p class="desc"> ' . $projDesc . '</p></div>';
             }
-            // VERSIONS
+            // Statistics and tools
             $versions = $client->api('version')->all($data['proj']);
-            $renderer->doc .= '<div class="version"><h3>Versions</h3>';
+            for($v = 0; $v < count($versions['versions']); $v++) {
+                $nbVersion = $v + 1;
+            }
+            $renderer->doc .= '<div>';
+            $renderer->doc .= '<div class="stats"><h3>Stats</h3>';
+            $renderer->doc .= '<p>Il y a actuellement '.$nbVersion.' versions disponibles.'; 
+            $renderer->doc .= '</div>';
+            $renderer->doc .= '<div class="action"><h4>Actions</h4>';
+            $renderer->doc .= '<p>Nouvelle issue : <a href="'.$url.'/projects/'.$projIdent.'/issues/new">créer</a></p>';
+            $renderer->doc .= '<p>Nouvelle version : <a href="'.$url.'/projects/'.$projIdent.'/settings/versions">créer</a></p>';
+            $renderer->doc .= '<p>Nouveau membre : <a href="'.$url.'/projects/'.$projIdent.'/settings/members">ajouter</a></p>';
+            $renderer->doc .= '</div></div>';
+            // VERSIONS
+            // $versions = $client->api('version')->all($data['proj']);
             // Parsing Version
             if($versions) {
+                $renderer->doc .= '<div class="version"><h3>Versions ';
+                $renderer->doc .= '<span class="nbver">(' . $nbVersion . ' versions)</span></h3>';
                 for($i = 0; $i < count($versions['versions']); $i++) {
                     $foundVersion = $versions['versions'][$i];
                     $versionId = $foundVersion['id'];
@@ -164,6 +179,8 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                     $renderer->doc .= '<br>';
                 } 
             } else {
+                $renderer->doc .= '<div class="version"><h3>Versions</h3>';
+                $renderer->doc .= $nbVersion . ' versions';
                 $renderer->doc .= 'div class="descver"><p>' . $this->getLang('noversion') . '</p></div>';
             }
             $renderer->doc .= '</div>';

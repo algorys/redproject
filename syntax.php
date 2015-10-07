@@ -102,20 +102,22 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $projDesc = $proj['project']['description'];
             // RENDERER PROJECT INFO
             // Title
-            $renderer->doc .= '<h2 class="title">Projet Redmine</h2>';
             if($projHome) {
-                $renderer->doc .= '<div class="title"><a href='.$projHome.'><img class="title" src="lib/plugins/redproject/images/home.png"></a><a href="'.$url.'/projects/'.$projIdent.'" class="title" title="Go to Redmine">' . $projName . '</a></div>';
+               $renderer->doc .= '<h2 class="title">Projet Redmine</h2>';
+               $renderer->doc .= '<div class="circle"><a href="'.$url.'/projects/'.$projIdent.'" class="circle hover">HOME</a>';
+               $renderer->doc .= '<span class="info">'.$projName.'</span></div>';
+               $renderer->doc .= '<div><a href="'.$url.'/projects/'.$projIdent.'" class="info">See it in redmine</a></div>';
             } else {
                 $renderer->doc .= '<div class="title"><img class="title" src="lib/plugins/redproject/images/home.png"><a href="'.$url.'/projects/'.$projIdent.'" class="title">' . $projName . '</a></div>';
             }
             // Parent
             if($projParent == ''){
-                $renderer->doc .= '<div class="parent">'.$this->getLang('mainproj').'<br></div>';
+                // TODO $renderer->doc .= '<div class="parent">'.$this->getLang('mainproj').'<br></div>';
             } else {
                 $projIdParent = $client->api('project')->getIdByName($nameParent);
                 $projInfoParent = $client->api('project')->show($projIdParent);
                 $projIdentParent = $projInfoParent['project']['identifier'];
-                $renderer->doc .= '<div class="parent">' . $this->getLang('subproject') . ' <a href='.$url.'/projects/'.$projIdentParent.'>'.$nameParent.'</a> </div>';
+                // TODO
             }
             // DESCRIPTION
             if ($projDesc == ''){
@@ -128,7 +130,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             for($v = 0; $v < count($versions['versions']); $v++) {
                 $nbVersion = $v + 1;
             }
-            $renderer->doc .= '<div>';
+            $renderer->doc .= '<div class="tools">';
             $renderer->doc .= '<div class="stats"><h3>Stats</h3>';
             $renderer->doc .= '<p>Il y a actuellement '.$nbVersion.' versions disponibles.'; 
             $renderer->doc .= '</div>';

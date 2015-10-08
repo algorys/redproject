@@ -136,22 +136,28 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $renderer->doc .= '<p>Nouveau membre : <a href="'.$url.'/projects/'.$projIdent.'/settings/members">ajouter</a></p>';
             $renderer->doc .= '</div></div>';
             // VERSIONS
-            // $versions = $client->api('version')->all($data['proj']);
             // Parsing Version
             if($versions) {
                 $renderer->doc .= '<div class="version"><h3>Versions ';
                 $renderer->doc .= '<span class="nbver">(' . $nbVersion . ' versions)</span></h3>';
+                $renderer->doc .= '<div class="panel-group" id="version-accordion-nb" role="tablist">';
                 for($i = 0; $i < count($versions['versions']); $i++) {
+                    // Begin Accordion
+                    $renderer->doc .= '<div class="panel panel-primary descver">';
                     $foundVersion = $versions['versions'][$i];
                     $versionId = $foundVersion['id'];
-                    $renderer->doc .=  '<div class="descver"><p class="version"><a class="version" href="'.$url.'/versions/'.$versionId.'"><span class="version">Version ' . $foundVersion['name'] . '</span> ';
+                    $renderer->doc .= '<div class="version panel-heading">';
+                    $renderer->doc .= '<h4 class="panel-title">';
+                    $renderer->doc .= '<a class="version" data-toggle="collapse" data-parent="#version-accordion-nb" href="#collapse-version-nb-'.$versionId.'">';
+                    $renderer->doc .= '<span class="version">Version ' . $foundVersion['name'] . '</span> ';
                     $renderer->doc .= $foundVersion['description'] . '</a>';
-                    // Status of Versions
-                    if($foundVersion['status'] == 'open') {
-                        $renderer->doc .= '<span class="statusop"> "' . $foundVersion['status'] . '"</span></p>';
-                    } else {
-                        $renderer->doc .= '<span class="statuscl"> "' . $foundVersion['status'] . '"</span></p>';
-                    }
+                    $statusClass = (($foundVersion['status'] == 'open') ? 'statusop' : 'statuscl');
+                    $renderer->doc .= '<span class="'.$statusClass.'"> "' . $foundVersion['status'] . '"</span>';
+                    $renderer->doc .= '</h4>'; // /.panel-title
+                    $renderer->doc .= '</div>'; // /.panel-heading
+                    $renderer->doc .= '<div id="collapse-version-nb-'.$versionId.'" class="panel-collapse collapse">';
+                    // PANEL BODY
+                    $renderer->doc .= '<div class="panel-body">';
                     // Time Entries
                     $createdOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['created_on']);
                     $updatedOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['updated_on']);
@@ -171,11 +177,14 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                       'fixed_version_id' => $foundVersion['id'],
                       'limit' => 1
                        ));
-                    //$nbIssue = $issueOpen['total_count'];
                     $diffIssue = $issueTotal['total_count'] - $issueOpen['total_count']; 
-                    $renderer->doc .= '<a href="' . $url . '/projects/' . $projIdent . '/issues">' . $issueTotal['total_count'] . ' issues (' . $diffIssue . ' closed - ' . $issueOpen['total_count'] . ' open)</a></div>';
+                    $renderer->doc .= '<a href="' . $url . '/projects/' . $projIdent . '/issues">' . $issueTotal['total_count'] . ' issues (' . $diffIssue . ' closed - ' . $issueOpen['total_count'] . ' open)</a>';
                     $renderer->doc .= '<br>';
-                } 
+                    $renderer->doc .= '</div>'; // /.panel-body
+                    $renderer->doc .= '</div>'; // /#collapse-version-nb-'.$versionId.' .panel-collapse 
+                    $renderer->doc .= '</div>'; // /.panel .panel-default
+                }
+                $renderer->doc .= '</div>'; // /.panel-group
             } else {
                 $renderer->doc .= '<div class="version"><h3>Versions</h3>';
                 $renderer->doc .= $nbVersion . ' versions';

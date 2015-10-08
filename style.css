@@ -7,39 +7,50 @@ h2.title {
 }
 
 div.title {
-    background-color: #008cba;
-    text-indent: 1.0em;
-    text-transform: uppercase;
-    font-family: sans-serif;
-    font-size: 24px;
-}
-
-span.info a:hover {
-    color: red;
-    border-bottom:3px solid #fff;
-}
-
-img.title {
-    float: right;
-    text-decoration: none;
-    padding-right: 6px
-}
-
-.circle {
-    width: 70px;
-    height: 70px;
-    border-radius: 50px;
-    font-size: 20px;
-    color: #fff;
-    line-height: 70px; 
-    text-align: center;
-    background: #008cba;
+    padding: .2em;
+    font-size: 1.5em;
     float: left;
+    position: relative;
+    min-width: 8em;
+}
+
+span.info-title {
+    font-size: 1.3em;
+}
+
+div.circle {
+    display: inline-block;
+    width: 3.5em;
+    height: 3.5em;
+    border-radius: 2.5em;
+    font-size: 1em;
+    line-height: 3.5em; 
+    text-align: center;
+    margin-right:0.2em;
+    background: #008cba;
+}
+
+div.circle a:link,
+div.circle a:visited {
+    color: #fff;
+    text-decoration: none;
 }
 
 div.circle a:hover {
     color: black;
     text-decoration: none;
+}
+
+div.title-droite {
+    display: inline-block;
+    line-height: 3.5em;
+}
+
+div.see-it {
+    position: absolute;
+    left:8em;
+    top: 3em;
+    font-size:0.5em;
 }
 
 .info {
@@ -52,6 +63,7 @@ div.parent {
     text-align: right;
     font-weight: bold;
 }
+
 div.desc h4 {
     background: url('images/ticket.png') no-repeat 0% 50%;
     padding-left: 20px;
@@ -71,11 +83,32 @@ p.desc {
     text-indent: 5%;
 }
 
-div.tools {
-    /*margin: 0 auto;
-    margin-top: 12%;*/
+div.details {
     clear: both;
+    padding: 1em;
 }
+
+div.stats {
+    border: 1px solid #eee;
+    border-left-width: 5px;
+    border-radius: 3px;
+    border-left-color: #3498db;
+    padding: 1em;
+    margin: 1em;
+    line-height: 0.1em;
+}
+
+div.action {
+    border: 1px solid #eee;
+    border-left-width: 5px;
+    border-radius: 3px;
+    border-left-color: #3498db;
+    padding: 1em;
+    margin: 1em;
+    line-height: 0.1em;
+
+}
+
 div.version h3 {
     color: #169;
 }

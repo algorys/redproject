@@ -102,13 +102,29 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $projDesc = $proj['project']['description'];
             // RENDERER PROJECT INFO
             // Title
+            $renderer->doc .= '<h2 class="title">Projet Redmine</h2>';
             if($projHome) {
-               $renderer->doc .= '<h2 class="title">Projet Redmine</h2>';
-               $renderer->doc .= '<div class="circle"><a href="'.$url.'/projects/'.$projIdent.'" class="circle hover">HOME</a>';
-               $renderer->doc .= '<span class="info">'.$projName.'</span></div>';
-               $renderer->doc .= '<div><a href="'.$url.'/projects/'.$projIdent.'" class="info">See it in redmine</a></div>';
+               $renderer->doc .= '<div class="title">';
+               $renderer->doc .= '<div class="circle"><a href="'.$projHome.'">HOME</a></div>';
+               $renderer->doc .= '<div class="title-droite">';
+               $renderer->doc .= '<span class="info-title">'.$projName.'</span>';
+               $renderer->doc .= '<div class="see-it">';
+               $renderer->doc .= '<a href="'.$url.'/projects/'.$projIdent.'">See it in redmine</a>';
+               $renderer->doc .= '</div>';// /.see-it
+               $renderer->doc .= '</div>'; // /.title-droite
+               $renderer->doc .= '</div>'; // /.title
             } else {
-                $renderer->doc .= '<div class="title"><img class="title" src="lib/plugins/redproject/images/home.png"><a href="'.$url.'/projects/'.$projIdent.'" class="title">' . $projName . '</a></div>';
+               //$renderer->doc .= 'NO HOME';
+               $renderer->doc .= '<div class="title">';
+               $renderer->doc .= '<div class="circle"><a href="'.$url.'/projects/'.$projIdent.'/settings">+</a></div>';
+               $renderer->doc .= '<div class="title-droite">';
+               $renderer->doc .= '<span class="info-title">'.$projName.'</span>';
+               $renderer->doc .= '<div class="see-it">';
+               $renderer->doc .= '<a href="'.$url.'/projects/'.$projIdent.'">See it in redmine</a>';
+               $renderer->doc .= '</div>';// /.see-it
+               $renderer->doc .= '</div>'; // /.title-droite
+               $renderer->doc .= '</div>'; // /.title
+
             }
             // DESCRIPTION
             if ($projDesc == ''){
@@ -116,25 +132,30 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             } else {
                 $renderer->doc .= '<div class="desc"><h4>Description</h4> <p class="desc"> ' . $projDesc . '</p></div>';
             }
-            // Statistics and tools
+            // DETAILS
             $versions = $client->api('version')->all($data['proj']);
             for($v = 0; $v < count($versions['versions']); $v++) {
                 $nbVersion = $v + 1;
             }
-            $renderer->doc .= '<div class="tools">';
+            $renderer->doc .= '<div class="details">';
+            $renderer->doc .= '<h3>Détails du Projet</h3>';
+            // Stats
+            $renderer->doc .= '<div class="stats"><h4>Données</h4>';
             if($projParent == ''){
-                $renderer->doc .= '<div class="parent">'.$this->getLang('mainproj').'<br></div>'; 
+                $renderer->doc .= '<p>'.$this->getLang('mainproj').'</p>'; 
             } else {
-                $renderer->doc .= '<div class="parent">Il y a un parent</div>';
+                $renderer->doc .= '<p></p>';
             }
-            $renderer->doc .= '<div class="stats"><h3>Détails</h3>';
             $renderer->doc .= '<p>Il y a actuellement '.$nbVersion.' versions disponibles.'; 
-            $renderer->doc .= '</div>';
-            $renderer->doc .= '<div class="action"><h4>Actions</h4>';
+            $renderer->doc .= '</div>'; // /.stats
+            // Actions
+            $renderer->doc .= '<div class="action">';
+            $renderer->doc .= '<h4>Actions</h4>';
             $renderer->doc .= '<p>Nouvelle issue : <a href="'.$url.'/projects/'.$projIdent.'/issues/new">créer</a></p>';
             $renderer->doc .= '<p>Nouvelle version : <a href="'.$url.'/projects/'.$projIdent.'/settings/versions">créer</a></p>';
             $renderer->doc .= '<p>Nouveau membre : <a href="'.$url.'/projects/'.$projIdent.'/settings/members">ajouter</a></p>';
-            $renderer->doc .= '</div></div>';
+            $renderer->doc .= '</div>'; // /.action
+            $renderer->doc .= '</div>'; // /.details
             // VERSIONS
             // Parsing Version
             if($versions) {
@@ -179,10 +200,10 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                        ));
                     $diffIssue = $issueTotal['total_count'] - $issueOpen['total_count']; 
                     $renderer->doc .= '<a href="' . $url . '/projects/' . $projIdent . '/issues">' . $issueTotal['total_count'] . ' issues (' . $diffIssue . ' closed - ' . $issueOpen['total_count'] . ' open)</a>';
-                    $renderer->doc .= '<br>';
                     $renderer->doc .= '</div>'; // /.panel-body
                     $renderer->doc .= '</div>'; // /#collapse-version-nb-'.$versionId.' .panel-collapse 
                     $renderer->doc .= '</div>'; // /.panel .panel-default
+                    $renderer->doc .= '<br>';
                 }
                 $renderer->doc .= '</div>'; // /.panel-group
             } else {

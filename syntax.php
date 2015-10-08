@@ -192,9 +192,11 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $renderer->doc .= '</div>';
 
             // DETAILS
+            // Get Number of Version
             for($v = 0; $v < count($versions['versions']); $v++) {
                 $nbVersion = $v + 1;
             }
+            // Get number of Issues
             $issueTotal = $client->api('issue')->all(array(
               'project_id' => $projId,
               'status_id' => '*',
@@ -205,6 +207,28 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
               'status_id' => 'open',
               'limit' => 1
               ));
+            // Initialize Array
+            $usersByRole = array();
+            $members = $client->api('membership')->all($projId);
+            // Found each Members
+            for($m = 0; $m <count($members['memberships']); $m++) {
+               // $z++;
+                $memberFound = $members['memberships'][$m];
+                $currentUser = $memberFound['user'];
+                for($r = 0; $r <count($memberFound['roles']); $r++) {
+                    $currentRole = $memberFound['roles'][$r];
+                    $roleId = $currentRole['id'];
+                    // If doesn't exist in usersByRole, create it
+                    if(!$usersByRole[$roleId]) {
+                        $currentRole['members'] = array($currentUser);
+                        $usersByRole[$roleId] = $currentRole;
+                    }
+                    // Else Push to array
+                    else {
+                        array_push($usersByRole[$roleId]['members'], $currentUser);
+                    }
+                }
+            }
             $renderer->doc .= '<div class="details">';
             $renderer->doc .= '<h3>Détails du Projet</h3>';
             // Stats
@@ -216,6 +240,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             }
             $renderer->doc .= '<p>Il y a actuellement '.$nbVersion.' versions.';
             $renderer->doc .= '<p>'. $issueTotal['total_count'].' issues dont '. $issueOpen['total_count'].' ouvertes</p>'; 
+            $renderer->doc .= '<p>'.$m.' membres participent au projet.</p>';
             $renderer->doc .= '</div>'; // /.stats
             // Actions
             $renderer->doc .= '<div class="action">';
@@ -226,30 +251,8 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $renderer->doc .= '</div>'; // /.action
             $renderer->doc .= '</div>'; // /.details
             // MEMBERSHIPS & ROLES
-
             $langMembers = $this->getLang('membres');
             $renderer->doc .= '<h3 class="member">'. $langMembers . '</h3>';
-            // Initialize Array
-            $usersByRole = array();
-            $members = $client->api('membership')->all($projId);
-            // Found each Members
-            for($m = 0; $m <count($members['memberships']); $m++) {
-                $memberFound = $members['memberships'][$m];
-                $currentUser = $memberFound['user'];
-                for($r = 0; $r <count($memberFound['roles']); $r++) {
-                    $currentRole = $memberFound['roles'][$r];
-                    $roleId = $currentRole['id'];
-                    // If doesn't exist in usersByRole, create it
-                    if(!$usersByRole[$roleId]) {
-                        $currentRole['members'] = array($currentUser);
-                        $usersByRole[$roleId] = $currentRole;
-                    } 
-                    // Else Push to array
-                    else {
-                        array_push($usersByRole[$roleId]['members'], $currentUser);
-                    }
-                }
-            }
             // Display new array usersByRole
             $renderer->doc .= '<div class="member">';
             foreach($usersByRole as $role => $currentRole) {

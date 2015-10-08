@@ -116,7 +116,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             } else {
                //$renderer->doc .= 'NO HOME';
                $renderer->doc .= '<div class="title">';
-               $renderer->doc .= '<div class="circle"><a href="'.$url.'/projects/'.$projIdent.'/settings">+</a></div>';
+               $renderer->doc .= '<div class="circle"><a href="'.$url.'/projects/'.$projIdent.'/settings" title="Add Homepage">+</a></div>';
                $renderer->doc .= '<div class="title-droite">';
                $renderer->doc .= '<span class="info-title">'.$projName.'</span>';
                $renderer->doc .= '<div class="see-it">';
@@ -132,31 +132,8 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             } else {
                 $renderer->doc .= '<div class="desc"><h4>Description</h4> <p class="desc"> ' . $projDesc . '</p></div>';
             }
-            // DETAILS
-            $versions = $client->api('version')->all($data['proj']);
-            for($v = 0; $v < count($versions['versions']); $v++) {
-                $nbVersion = $v + 1;
-            }
-            $renderer->doc .= '<div class="details">';
-            $renderer->doc .= '<h3>Détails du Projet</h3>';
-            // Stats
-            $renderer->doc .= '<div class="stats"><h4>Données</h4>';
-            if($projParent == ''){
-                $renderer->doc .= '<p>'.$this->getLang('mainproj').'</p>'; 
-            } else {
-                $renderer->doc .= '<p></p>';
-            }
-            $renderer->doc .= '<p>Il y a actuellement '.$nbVersion.' versions disponibles.'; 
-            $renderer->doc .= '</div>'; // /.stats
-            // Actions
-            $renderer->doc .= '<div class="action">';
-            $renderer->doc .= '<h4>Actions</h4>';
-            $renderer->doc .= '<p>Nouvelle issue : <a href="'.$url.'/projects/'.$projIdent.'/issues/new">créer</a></p>';
-            $renderer->doc .= '<p>Nouvelle version : <a href="'.$url.'/projects/'.$projIdent.'/settings/versions">créer</a></p>';
-            $renderer->doc .= '<p>Nouveau membre : <a href="'.$url.'/projects/'.$projIdent.'/settings/members">ajouter</a></p>';
-            $renderer->doc .= '</div>'; // /.action
-            $renderer->doc .= '</div>'; // /.details
             // VERSIONS
+            $versions = $client->api('version')->all($data['proj']);
             // Parsing Version
             if($versions) {
                 $renderer->doc .= '<div class="version"><h3>Versions ';
@@ -173,7 +150,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                     $renderer->doc .= '<span class="version">Version ' . $foundVersion['name'] . '</span> ';
                     $renderer->doc .= $foundVersion['description'] . '</a>';
                     $statusClass = (($foundVersion['status'] == 'open') ? 'statusop' : 'statuscl');
-                    $renderer->doc .= '<span class="'.$statusClass.'"> "' . $foundVersion['status'] . '"</span>';
+                    $renderer->doc .= '<span class="'.$statusClass.'"> ' . $foundVersion['status'] . ' </span>';
                     $renderer->doc .= '</h4>'; // /.panel-title
                     $renderer->doc .= '</div>'; // /.panel-heading
                     $renderer->doc .= '<div id="collapse-version-nb-'.$versionId.'" class="panel-collapse collapse">';
@@ -182,6 +159,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                     // Time Entries
                     $createdOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['created_on']);
                     $updatedOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['updated_on']);
+                    $renderer->doc .= '<p><a href="'.$url.'/versions/'.$versionId.'">See this version in redmine</a></p>';
                     $renderer->doc .= '<p>'.$this->getLang('createdon') . $createdOn->format(DateTime::RFC850) . '</p>';
                     $renderer->doc .= '<p>'.$this->getLang('updatedon') . $updatedOn->format(DateTime::RFC850) . '</p>';
                     // Issues of Versions
@@ -212,7 +190,43 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                 $renderer->doc .= 'div class="descver"><p>' . $this->getLang('noversion') . '</p></div>';
             }
             $renderer->doc .= '</div>';
+
+            // DETAILS
+            for($v = 0; $v < count($versions['versions']); $v++) {
+                $nbVersion = $v + 1;
+            }
+            $issueTotal = $client->api('issue')->all(array(
+              'project_id' => $projId,
+              'status_id' => '*',
+              'limit' => 1
+              ));
+            $issueOpen = $client->api('issue')->all(array(
+              'project_id' => $projId,
+              'status_id' => 'open',
+              'limit' => 1
+              ));
+            $renderer->doc .= '<div class="details">';
+            $renderer->doc .= '<h3>Détails du Projet</h3>';
+            // Stats
+            $renderer->doc .= '<div class="stats"><h4>Données</h4>';
+            if($projParent == ''){
+                $renderer->doc .= '<p>'.$this->getLang('mainproj').'</p>'; 
+            } else {
+                $renderer->doc .= '<p></p>';
+            }
+            $renderer->doc .= '<p>Il y a actuellement '.$nbVersion.' versions.';
+            $renderer->doc .= '<p>'. $issueTotal['total_count'].' issues dont '. $issueOpen['total_count'].' ouvertes</p>'; 
+            $renderer->doc .= '</div>'; // /.stats
+            // Actions
+            $renderer->doc .= '<div class="action">';
+            $renderer->doc .= '<h4>Actions</h4>';
+            $renderer->doc .= '<p>Nouvelle issue : <a href="'.$url.'/projects/'.$projIdent.'/issues/new">créer</a></p>';
+            $renderer->doc .= '<p>Nouvelle version : <a href="'.$url.'/projects/'.$projIdent.'/settings/versions">créer</a></p>';
+            $renderer->doc .= '<p>Nouveau membre : <a href="'.$url.'/projects/'.$projIdent.'/settings/members">ajouter</a></p>';
+            $renderer->doc .= '</div>'; // /.action
+            $renderer->doc .= '</div>'; // /.details
             // MEMBERSHIPS & ROLES
+
             $langMembers = $this->getLang('membres');
             $renderer->doc .= '<h3 class="member">'. $langMembers . '</h3>';
             // Initialize Array

@@ -84,8 +84,7 @@ p.desc {
 }
 
 div.details {
-    clear: both;
-    padding: 1em;
+    color: #169;
 }
 
 div.stats {
@@ -95,7 +94,7 @@ div.stats {
     border-left-color: #3498db;
     padding: 1em;
     margin: 1em;
-    line-height: 0.1em;
+    line-height: 0.8em;
 }
 
 div.action {
@@ -105,10 +104,14 @@ div.action {
     border-left-color: #3498db;
     padding: 1em;
     margin: 1em;
-    line-height: 0.1em;
+    line-height: 0.8em;
 
 }
 
+div.version {
+    clear: both;
+    padding-top: 8px;
+}
 div.version h3 {
     color: #169;
 }
@@ -122,8 +125,6 @@ p.version {
 
 span.version {
     padding: 1px;
-    background-color:#3498db;
-    color: white;
     border-radius: 0.3em;
 }
 
@@ -135,30 +136,25 @@ a.version {
     text-decoration: none !important;
     padding: 2px;
 }
-a.version:hover {
-    color: #169;
-    text-decoration: underline;
-}
 
 div.descver {
     background-color: #F3F9FF;
 }
 
 div.descver p{
-    font-size: 14px;    
+    font-size: 0.9em;    
     }
 
 div.descver a {
-    color: #169 !important;
     font-size: 12px;
 }
 
 span.statusop {
-    color:green;
+    color:#00EA00;
 }
 
 span.statuscl {
-    color:red;
+    color:#940707;
 }
 
 h3.member {
@@ -170,8 +166,15 @@ h3.member {
 }
 
 div.member {
-    background-color: #f6f6f6;
-    font-size: 14px;
+    //background-color: #f6f6f6;
+    //font-size: 14px;
+    border: 1px solid #eee;
+    border-left-width: 5px;
+    border-radius: 3px;
+    border-left-color: #6f5499;
+    padding: 1em;
+    margin: 1em;
+    line-height: 0.8em;
 }
 
 p.member {

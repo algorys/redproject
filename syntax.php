@@ -110,15 +110,6 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             } else {
                 $renderer->doc .= '<div class="title"><img class="title" src="lib/plugins/redproject/images/home.png"><a href="'.$url.'/projects/'.$projIdent.'" class="title">' . $projName . '</a></div>';
             }
-            // Parent
-            if($projParent == ''){
-                // TODO $renderer->doc .= '<div class="parent">'.$this->getLang('mainproj').'<br></div>';
-            } else {
-                $projIdParent = $client->api('project')->getIdByName($nameParent);
-                $projInfoParent = $client->api('project')->show($projIdParent);
-                $projIdentParent = $projInfoParent['project']['identifier'];
-                // TODO
-            }
             // DESCRIPTION
             if ($projDesc == ''){
                 $renderer->doc .= '<div class="desc"><h4>Description</h4> <p>'.$this->getLang('description').'</p></div>';
@@ -131,7 +122,12 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                 $nbVersion = $v + 1;
             }
             $renderer->doc .= '<div class="tools">';
-            $renderer->doc .= '<div class="stats"><h3>Stats</h3>';
+            if($projParent == ''){
+                $renderer->doc .= '<div class="parent">'.$this->getLang('mainproj').'<br></div>'; 
+            } else {
+                $renderer->doc .= '<div class="parent">Il y a un parent</div>';
+            }
+            $renderer->doc .= '<div class="stats"><h3>Détails</h3>';
             $renderer->doc .= '<p>Il y a actuellement '.$nbVersion.' versions disponibles.'; 
             $renderer->doc .= '</div>';
             $renderer->doc .= '<div class="action"><h4>Actions</h4>';

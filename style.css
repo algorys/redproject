@@ -72,8 +72,9 @@ p.desc {
 }
 
 div.tools {
-    margin: 0 auto;
-    margin-top: 12%;
+    /*margin: 0 auto;
+    margin-top: 12%;*/
+    clear: both;
 }
 div.version h3 {
     color: #169;

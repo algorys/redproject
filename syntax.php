@@ -12,11 +12,6 @@ require 'vendor/php-redmine-api/lib/autoload.php';
 class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
     const RI_IMPERSONATE = 4;
 
-    function _getImgName() {
-        // If empty (False) get the second part
-        return $this->getConf('redproject.img') ?: 'lib/plugins/redproject/images/redmine.png' ;
-    }
-
     public function getType() {
         return 'container';
     }
@@ -51,7 +46,6 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                 $data = array(
                         'state'=>$state,
                         'proj'=> '',
-                        'info'=> ''
                     );
                 // Looking for id
                 preg_match("/proj *= *(['\"])(.*?)\\1/", $match, $proj);
@@ -63,11 +57,6 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                             'error'=>true,
                             'text'=>'##ERROR &lt;redproject&gt;: project name required##'
                         );
-                }
-                // Looking for text link
-                preg_match("/info *= *(['\"])(.*?)\\1/", $match, $info);
-                if( count($info) != 0 ) {
-                    $data['info'] = $info[2];
                 }
 
                 return $data;

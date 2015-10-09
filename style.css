@@ -138,6 +138,11 @@ a.version {
     padding: 2px;
 }
 
+span.doku {
+    font-style: italic;
+    font-family: fantasy;
+}
+
 div.descver {
     background-color: #F3F9FF;
 }

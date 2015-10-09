@@ -38,6 +38,13 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
     function postConnect() {
         $this->Lexer->addExitPattern('</redproject>', 'plugin_redproject');
     }
+
+    function getPercent($opIssue, $totalIssue) {
+        $p = $opIssue / $totalIssue;
+        $progress = $p * 100;
+        return round($progress, 1);
+    }
+
     // Do the regexp
     function handle($match, $state, $pos, $handler) {
         switch($state){
@@ -97,7 +104,8 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $renderer->doc .= '<h2 class="title">Projet Redmine</h2>';
             if($projHome) {
                $renderer->doc .= '<div class="title">';
-               $renderer->doc .= '<div class="circle"><a href="'.$projHome.'">HOME</a></div>';
+               //$renderer->doc .= '<div class="circle"><a href="'.$projHome.'">HOME</a></div>';
+               $renderer->doc .= '<a href="'.$projHome.'"><div class="circle">HOME</div></a>';
                $renderer->doc .= '<div class="title-droite">';
                $renderer->doc .= '<span class="info-title">'.$projName.'</span>';
                $renderer->doc .= '<div class="see-it">';
@@ -108,7 +116,8 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             } else {
                //$renderer->doc .= 'NO HOME';
                $renderer->doc .= '<div class="title">';
-               $renderer->doc .= '<div class="circle"><a href="'.$url.'/projects/'.$projIdent.'/settings" title="Add Homepage">+</a></div>';
+               //$renderer->doc .= '<div class="circle"><a href="'.$url.'/projects/'.$projIdent.'/settings" title="Add Homepage">+</a></div>';
+               $renderer->doc .= '<a href="'.$projHome.'" title="Add Homepage"><div class="circle">+</div></a>';
                $renderer->doc .= '<div class="title-droite">';
                $renderer->doc .= '<span class="info-title">'.$projName.'</span>';
                $renderer->doc .= '<div class="see-it">';
@@ -168,7 +177,20 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                       'limit' => 1
                        ));
                     $diffIssue = $issueTotal['total_count'] - $issueOpen['total_count']; 
+                    $progress = $this->getPercent($diffIssue,$issueTotal['total_count']);
+                    $renderer->doc .= '<p>Progress = ' . $progress . '</p>';
+                    $renderer->doc .= '<span class="col-md-3">';
                     $renderer->doc .= '<a href="' . $url . '/projects/' . $projIdent . '/issues">' . $issueTotal['total_count'] . ' issues (' . $diffIssue . ' closed - ' . $issueOpen['total_count'] . ' open)</a>';
+                    $renderer->doc .= '</span>'; // /.col-md-3
+                    $renderer->doc .= '<span class="col-md-6">';
+                    $renderer->doc .= '<div class="progress">
+  <span class="progress-bar" role="progressbar" aria-valuenow="70"
+  aria-valuemin="0" aria-valuemax="100" style="width:70%">
+    <span class="sr-only">70% Complete</span>
+  </span>
+</div>';
+                    $renderer->doc .= '</span>';// ./col-md-6
+                        
                     $renderer->doc .= '</div>'; // /.panel-body
                     $renderer->doc .= '</div>'; // /#collapse-version-nb-'.$versionId.' .panel-collapse 
                     $renderer->doc .= '</div>'; // /.panel .panel-default

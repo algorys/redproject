@@ -17,7 +17,7 @@ div.title {
 }
 
 span.info-title {
-    font-size: 1.3em;
+    font-size: 1.7em;
 }
 
 div.circle {
@@ -30,17 +30,12 @@ div.circle {
     text-align: center;
     margin-right:0.2em;
     background: #3498db;
+    color: white;
 }
 
-div.circle a:link,
-div.circle a:visited {
-    color: #fff;
-    text-decoration: none;
-}
-
-div.circle a:hover {
-    color: black;
-    text-decoration: none;
+a:hover div.circle {
+    color:white;
+    background-color:#357ebd;
 }
 
 div.title-droite {
@@ -190,3 +185,5 @@ p.member {
 p.member span {
     color: #169;
 }
+
+

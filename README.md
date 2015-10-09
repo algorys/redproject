@@ -48,7 +48,13 @@ There is two way to use this plugin :
 
 ## Preview
 Here is a preview of redproject :
-![](http://s23.postimg.org/gtqfmo5rv/redproject.png)
+
+Name, homepage and description of project :
+![](http://s21.postimg.org/donlxk0uv/description.png)
+Each Versions with her issues. Progress bar.
+![](http://s16.postimg.org/vabjgsqut/versions.png)
+Last détails and Members.
+![](http://s16.postimg.org/asd9jarjp/detail.png)
 
 For further information, see also [Redproject on dokuwiki.org](https://www.dokuwiki.org/plugin:redproject)
 

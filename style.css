@@ -3,7 +3,9 @@ h2.title {
     color: #008cba;
     font-style: oblique; 
     font-size: large;
-    line-height: 0.5;
+    background: url('/lib/plugins/redproject/images/redmine.png') no-repeat 0 50%;
+    background-size: 1.8em;
+    padding-left: 2em;
 }
 
 div.title {
@@ -15,7 +17,7 @@ div.title {
 }
 
 span.info-title {
-    font-size: 1.3em;
+    font-size: 1.7em;
 }
 
 div.circle {
@@ -27,18 +29,13 @@ div.circle {
     line-height: 3.5em; 
     text-align: center;
     margin-right:0.2em;
-    background: #008cba;
+    background: #3498db;
+    color: white;
 }
 
-div.circle a:link,
-div.circle a:visited {
-    color: #fff;
-    text-decoration: none;
-}
-
-div.circle a:hover {
-    color: black;
-    text-decoration: none;
+a:hover div.circle {
+    color:white;
+    background-color:#357ebd;
 }
 
 div.title-droite {
@@ -66,16 +63,18 @@ div.parent {
 
 div.desc h4 {
     background: url('images/ticket.png') no-repeat 0% 50%;
-    padding-left: 20px;
+    padding-left: 1.2em;
 }
+
 div.desc {
-    background-color: #f6f6f6;
     width: 60%;
-    line-height: 1.5em;
-    border: 1px solid #e4e4e4;
-    padding-right: 5px;
-    padding-left: 5px;
     float: right;
+    border: 1px solid #eee;
+    border-left-width: 5px;
+    border-radius: 3px;
+    border-left-color: #19B317;
+    padding: 1em;
+    margin: 1em;
 }
 p.desc {
     background-color: #f6f6f6;
@@ -85,6 +84,11 @@ p.desc {
 
 div.details {
     color: #169;
+}
+
+div.details h3 {
+    background: url('images/stats.png') no-repeat 0% 50%;
+    padding-left: 1.2em;
 }
 
 div.stats {
@@ -114,18 +118,15 @@ div.version {
 }
 div.version h3 {
     color: #169;
-}
-
-p.version {
-    background: url('images/package.png') no-repeat 0% 50%;
-    padding-left: 20px;
-    color:#169;
-    text-indent:0.3em;
+    background: url('images/versions.png') no-repeat 0% 50%;
+    padding-left: 1.2em;
 }
 
 span.version {
-    padding: 1px;
+    padding: 0.1em;
+    padding-left: 2em;
     border-radius: 0.3em;
+    background: url('images/package.png') no-repeat 0% 50%;
 }
 
 span.nbver {
@@ -135,6 +136,11 @@ span.nbver {
 a.version {
     text-decoration: none !important;
     padding: 2px;
+}
+
+span.doku {
+    font-style: italic;
+    font-family: fantasy;
 }
 
 div.descver {
@@ -184,3 +190,5 @@ p.member {
 p.member span {
     color: #169;
 }
+
+

@@ -38,6 +38,13 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
     function postConnect() {
         $this->Lexer->addExitPattern('</redproject>', 'plugin_redproject');
     }
+
+    function getPercent($opIssue, $totalIssue) {
+        $p = $opIssue / $totalIssue;
+        $progress = $p * 100;
+        return round($progress, 1);
+    }
+
     // Do the regexp
     function handle($match, $state, $pos, $handler) {
         switch($state){
@@ -87,6 +94,9 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $projName = $proj['project']['name'];        
             $projParent = $proj['project']['parent'];
             $nameParent = $projParent['name'];
+            $parentId = $client->api('project')->getIdByName($nameParent);
+            $parent = $client->api('project')->show($parentId);
+            $parentIdent = $parent['project']['identifier'];
             $projHome = $proj['project']['homepage'];
             $projDesc = $proj['project']['description'];
             // RENDERER PROJECT INFO
@@ -94,7 +104,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $renderer->doc .= '<h2 class="title">Projet Redmine</h2>';
             if($projHome) {
                $renderer->doc .= '<div class="title">';
-               $renderer->doc .= '<div class="circle"><a href="'.$projHome.'">HOME</a></div>';
+               $renderer->doc .= '<a href="'.$projHome.'"><div class="circle">HOME</div></a>';
                $renderer->doc .= '<div class="title-droite">';
                $renderer->doc .= '<span class="info-title">'.$projName.'</span>';
                $renderer->doc .= '<div class="see-it">';
@@ -105,7 +115,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             } else {
                //$renderer->doc .= 'NO HOME';
                $renderer->doc .= '<div class="title">';
-               $renderer->doc .= '<div class="circle"><a href="'.$url.'/projects/'.$projIdent.'/settings" title="Add Homepage">+</a></div>';
+               $renderer->doc .= '<a href="'.$projHome.'" title="Add Homepage"><div class="circle">+</div></a>';
                $renderer->doc .= '<div class="title-droite">';
                $renderer->doc .= '<span class="info-title">'.$projName.'</span>';
                $renderer->doc .= '<div class="see-it">';
@@ -125,8 +135,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $versions = $client->api('version')->all($data['proj']);
             // Parsing Version
             if($versions) {
-                $renderer->doc .= '<div class="version"><h3>Versions ';
-                $renderer->doc .= '<span class="nbver">(' . $nbVersion . ' versions)</span></h3>';
+                $renderer->doc .= '<div class="version"><h3>Versions</h3>';
                 $renderer->doc .= '<div class="panel-group" id="version-accordion-nb" role="tablist">';
                 for($i = 0; $i < count($versions['versions']); $i++) {
                     // Begin Accordion
@@ -149,8 +158,8 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                     $createdOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['created_on']);
                     $updatedOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['updated_on']);
                     $renderer->doc .= '<p><a href="'.$url.'/versions/'.$versionId.'">See this version in redmine</a></p>';
-                    $renderer->doc .= '<p>'.$this->getLang('createdon') . $createdOn->format(DateTime::RFC850) . '</p>';
-                    $renderer->doc .= '<p>'.$this->getLang('updatedon') . $updatedOn->format(DateTime::RFC850) . '</p>';
+                    $renderer->doc .= '<p><b>'.$this->getLang('createdon').'</b>'.$createdOn->format(DateTime::RFC850).'</p>';
+                    $renderer->doc .= '<p><b>'.$this->getLang('updatedon').'</b>'.$updatedOn->format(DateTime::RFC850).'</p>';
                     // Issues of Versions
                     $issueTotal = $client->api('issue')->all(array(
                       'project_id' => $projId,
@@ -165,8 +174,20 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                       'fixed_version_id' => $foundVersion['id'],
                       'limit' => 1
                        ));
+                    // Get percent version
                     $diffIssue = $issueTotal['total_count'] - $issueOpen['total_count']; 
+                    $progress = $this->getPercent($diffIssue,$issueTotal['total_count']);
+                    // renderer Progressbar
+                    $renderer->doc .= '<span class="col-md-3">';
                     $renderer->doc .= '<a href="' . $url . '/projects/' . $projIdent . '/issues">' . $issueTotal['total_count'] . ' issues (' . $diffIssue . ' closed - ' . $issueOpen['total_count'] . ' open)</a>';
+                    $renderer->doc .= '</span>'; // /.col-md-3
+                    $renderer->doc .= '<span class="col-md-6">';
+                    $renderer->doc .= '<div class="progress">';
+                    $renderer->doc .= '<span class="progress-bar" role="progressbar" aria-valuenow="70"
+  aria-valuemin="0" aria-valuemax="100" style="width:'.$progress.'%">';
+                    $renderer->doc .= '<span class="doku">'.$progress.'% Complete</span>';
+                    $renderer->doc .= '</span></div>'; // ./progress
+                    $renderer->doc .= '</span>'; // ./col-md-6
                     $renderer->doc .= '</div>'; // /.panel-body
                     $renderer->doc .= '</div>'; // /#collapse-version-nb-'.$versionId.' .panel-collapse 
                     $renderer->doc .= '</div>'; // /.panel .panel-default
@@ -221,23 +242,16 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $renderer->doc .= '<div class="details">';
             $renderer->doc .= '<h3>Détails du Projet</h3>';
             // Stats
-            $renderer->doc .= '<div class="stats"><h4>Données</h4>';
+            $renderer->doc .= '<div class="stats">';
             if($projParent == ''){
                 $renderer->doc .= '<p>'.$this->getLang('mainproj').'</p>'; 
             } else {
-                $renderer->doc .= '<p></p>';
+                $renderer->doc .= '<p>'.$this->getLang('subproject').' <a href="'.$url.'/projects/'.$parentIdent.'">'.$nameParent.'</a></p>';
             }
             $renderer->doc .= '<p>Il y a actuellement '.$nbVersion.' versions.';
             $renderer->doc .= '<p>'. $issueTotal['total_count'].' issues dont '. $issueOpen['total_count'].' ouvertes</p>'; 
             $renderer->doc .= '<p>'.$m.' membres participent au projet.</p>';
             $renderer->doc .= '</div>'; // /.stats
-            // Actions
-            $renderer->doc .= '<div class="action">';
-            $renderer->doc .= '<h4>Actions</h4>';
-            $renderer->doc .= '<p>Nouvelle issue : <a href="'.$url.'/projects/'.$projIdent.'/issues/new">créer</a></p>';
-            $renderer->doc .= '<p>Nouvelle version : <a href="'.$url.'/projects/'.$projIdent.'/settings/versions">créer</a></p>';
-            $renderer->doc .= '<p>Nouveau membre : <a href="'.$url.'/projects/'.$projIdent.'/settings/members">ajouter</a></p>';
-            $renderer->doc .= '</div>'; // /.action
             $renderer->doc .= '</div>'; // /.details
             // MEMBERSHIPS & ROLES
             $langMembers = $this->getLang('membres');

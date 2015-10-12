@@ -12,5 +12,12 @@ $lang['description']= 'No description is available for this projet.';
 $lang['createdon']  = 'Created on : ';
 $lang['updatedon']  = 'Updated on : ';
 $lang['noversion']  = 'No version available for this project';
+$lang['hdetail']    = 'Project Details';
+$lang['tversion']   = 'There are currently ';
+$lang['vversion']   = ' versions,';
+$lang['issues']     = ' issues including ';
+$lang['open']       = ' open and';
+$lang['membdetail'] = ' members involved in the project.';
+
 $lang['membres']    = 'Members';
 

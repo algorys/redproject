@@ -77,7 +77,6 @@ div.desc {
     margin: 1em;
 }
 p.desc {
-    background-color: #f6f6f6;
     text-align: justify;
     text-indent: 5%;
 }
@@ -140,7 +139,7 @@ a.version {
 
 span.doku {
     font-style: italic;
-    font-family: fantasy;
+    font-family: monospace;
 }
 
 div.descver {

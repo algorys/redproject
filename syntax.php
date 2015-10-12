@@ -239,8 +239,9 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                     }
                 }
             }
+            // Renderer Details
             $renderer->doc .= '<div class="details">';
-            $renderer->doc .= '<h3>Détails du Projet</h3>';
+            $renderer->doc .= '<h3>'.$this->getlang('hdetail').'</h3>';
             // Stats
             $renderer->doc .= '<div class="stats">';
             if($projParent == ''){
@@ -248,9 +249,9 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             } else {
                 $renderer->doc .= '<p>'.$this->getLang('subproject').' <a href="'.$url.'/projects/'.$parentIdent.'">'.$nameParent.'</a></p>';
             }
-            $renderer->doc .= '<p>Il y a actuellement '.$nbVersion.' versions.';
-            $renderer->doc .= '<p>'. $issueTotal['total_count'].' issues dont '. $issueOpen['total_count'].' ouvertes</p>'; 
-            $renderer->doc .= '<p>'.$m.' membres participent au projet.</p>';
+            $renderer->doc .= '<p>'.$this->getLang('tversion').'<span class="label label-info">'.$nbVersion.'</span>'.$this->getLang('vversion').'</p>';
+            $renderer->doc .= '<p><span class="label label-success">'. $issueTotal['total_count'].'</span>'.$this->getLang('issues').'<span class="label label-warning">'.$issueOpen['total_count'].'</span>'.$this->getLang('open').'</p>'; 
+            $renderer->doc .= '<p><span class="label label-info">'.$m.'</span>'.$this->getLang('membdetail').'</p>';
             $renderer->doc .= '</div>'; // /.stats
             $renderer->doc .= '</div>'; // /.details
             // MEMBERSHIPS & ROLES

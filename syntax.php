@@ -113,7 +113,6 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                $renderer->doc .= '</div>'; // /.title-droite
                $renderer->doc .= '</div>'; // /.title
             } else {
-               //$renderer->doc .= 'NO HOME';
                $renderer->doc .= '<div class="title">';
                $renderer->doc .= '<a href="'.$projHome.'" title="Add Homepage"><div class="circle">+</div></a>';
                $renderer->doc .= '<div class="title-droite">';
@@ -146,7 +145,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                     $renderer->doc .= '<h4 class="panel-title">';
                     $renderer->doc .= '<a class="version" data-toggle="collapse" data-parent="#version-accordion-nb" href="#collapse-version-nb-'.$versionId.'">';
                     $renderer->doc .= '<span class="version">Version ' . $foundVersion['name'] . '</span> ';
-                    $renderer->doc .= $foundVersion['description'] . '</a>';
+                    $renderer->doc .= '</a>';
                     $statusClass = (($foundVersion['status'] == 'open') ? 'statusop' : 'statuscl');
                     $renderer->doc .= '<span class="'.$statusClass.'"> ' . $foundVersion['status'] . ' </span>';
                     $renderer->doc .= '</h4>'; // /.panel-title
@@ -157,6 +156,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                     // Time Entries
                     $createdOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['created_on']);
                     $updatedOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['updated_on']);
+                    $renderer->doc .= '<p><b>Description :</b> '.$foundVersion['description'].'</p>';
                     $renderer->doc .= '<p><a href="'.$url.'/versions/'.$versionId.'">See this version in redmine</a></p>';
                     $renderer->doc .= '<p><b>'.$this->getLang('createdon').'</b>'.$createdOn->format(DateTime::RFC850).'</p>';
                     $renderer->doc .= '<p><b>'.$this->getLang('updatedon').'</b>'.$updatedOn->format(DateTime::RFC850).'</p>';

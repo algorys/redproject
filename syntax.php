@@ -46,7 +46,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
     }
 
     // Do the regexp
-    function handle($match, $state, $pos, $handler) {
+    function handle($match, $state, $pos, Doku_Handler $handler) {
         switch($state){
             case DOKU_LEXER_SPECIAL :
             case DOKU_LEXER_ENTER :
@@ -277,7 +277,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
         }
     }
     // Dokuwiki Renderer
-    function render($mode, $renderer, $data) {	
+    function render($mode, Doku_Renderer $renderer, $data) {	
         $renderer->info['cache'] = false;
         if($mode != 'xhtml') return false;
 

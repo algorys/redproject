@@ -93,10 +93,12 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $projIdent = $proj['project']['identifier'];
             $projName = $proj['project']['name'];        
             $projParent = $proj['project']['parent'];
-            $nameParent = $projParent['name'];
-            $parentId = $client->api('project')->getIdByName($nameParent);
-            $parent = $client->api('project')->show($parentId);
-            $parentIdent = $parent['project']['identifier'];
+            if ( ! empty($projParent)) {
+                $nameParent = $projParent['name'];
+                $parentId = $client->api('project')->getIdByName($nameParent);
+                $parent = $client->api('project')->show($parentId);
+                $parentIdent = $parent['project']['identifier'];
+            }
             $projHome = $proj['project']['homepage'];
             $projDesc = $proj['project']['description'];
             // RENDERER PROJECT INFO

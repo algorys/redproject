@@ -101,8 +101,6 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
 
     // Main render_link
     function _render_project($renderer, $data) {
-        $apiKey = $this->getConf('redproject.API');
-        $url = $this->getConf('redproject.url');
         $client = new Redmine\Client($data['server_url'], $data['server_token']);
         // Get Id user of the Wiki if Impersonate
         $view = $this->getConf('redproject.view');
@@ -135,7 +133,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                $renderer->doc .= '<div class="title-droite">';
                $renderer->doc .= '<span class="info-title">'.$projName.'</span>';
                $renderer->doc .= '<div class="see-it">';
-               $renderer->doc .= '<a href="'.$url.'/projects/'.$projIdent.'">See it in redmine</a>';
+               $renderer->doc .= '<a href="'.$data['server_url'].'/projects/'.$projIdent.'">See it in redmine</a>';
                $renderer->doc .= '</div>';// /.see-it
                $renderer->doc .= '</div>'; // /.title-droite
                $renderer->doc .= '</div>'; // /.title
@@ -145,7 +143,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                $renderer->doc .= '<div class="title-droite">';
                $renderer->doc .= '<span class="info-title">'.$projName.'</span>';
                $renderer->doc .= '<div class="see-it">';
-               $renderer->doc .= '<a href="'.$url.'/projects/'.$projIdent.'">See it in redmine</a>';
+               $renderer->doc .= '<a href="'.$data['server_url'].'/projects/'.$projIdent.'">See it in redmine</a>';
                $renderer->doc .= '</div>';// /.see-it
                $renderer->doc .= '</div>'; // /.title-droite
                $renderer->doc .= '</div>'; // /.title
@@ -184,7 +182,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                     $createdOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['created_on']);
                     $updatedOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['updated_on']);
                     $renderer->doc .= '<p><b>Description :</b> '.$foundVersion['description'].'</p>';
-                    $renderer->doc .= '<p><a href="'.$url.'/versions/'.$versionId.'">See this version in redmine</a></p>';
+                    $renderer->doc .= '<p><a href="'.$data['server_url'].'/versions/'.$versionId.'">See this version in redmine</a></p>';
                     $renderer->doc .= '<p><b>'.$this->getLang('createdon').'</b>'.$createdOn->format(DateTime::RFC850).'</p>';
                     $renderer->doc .= '<p><b>'.$this->getLang('updatedon').'</b>'.$updatedOn->format(DateTime::RFC850).'</p>';
                     // Issues of Versions
@@ -206,7 +204,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                     $progress = $this->getPercent($diffIssue,$issueTotal['total_count']);
                     // renderer Progressbar
                     $renderer->doc .= '<span class="col-md-3">';
-                    $renderer->doc .= '<a href="' . $url . '/projects/' . $projIdent . '/issues">' . $issueTotal['total_count'] . ' issues (' . $diffIssue . ' closed - ' . $issueOpen['total_count'] . ' open)</a>';
+                    $renderer->doc .= '<a href="'.$data['server_url'].'/projects/'.$projIdent.'/issues">'.$issueTotal['total_count'].' issues ('.$diffIssue.' closed - '.$issueOpen['total_count'].' open)</a>';
                     $renderer->doc .= '</span>'; // /.col-md-3
                     $renderer->doc .= '<span class="col-md-6">';
                     $renderer->doc .= '<div class="progress">';
@@ -274,7 +272,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             if($projParent == ''){
                 $renderer->doc .= '<p>'.$this->getLang('mainproj').'</p>'; 
             } else {
-                $renderer->doc .= '<p>'.$this->getLang('subproject').' <a href="'.$url.'/projects/'.$parentIdent.'">'.$nameParent.'</a></p>';
+                $renderer->doc .= '<p>'.$this->getLang('subproject').' <a href="'.$data['server_url'].'/projects/'.$parentIdent.'">'.$nameParent.'</a></p>';
             }
             $renderer->doc .= '<p>'.$this->getLang('tversion').'<span class="label label-info">'.$nbVersion.'</span>'.$this->getLang('vversion').'</p>';
             $renderer->doc .= '<p><span class="label label-success">'. $issueTotal['total_count'].'</span>'.$this->getLang('issues').'<span class="label label-warning">'.$issueOpen['total_count'].'</span>'.$this->getLang('open').'</p>'; 

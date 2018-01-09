@@ -39,6 +39,16 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
         $this->Lexer->addExitPattern('</redproject>', 'plugin_redproject');
     }
 
+    function getServerFromJson($server) {
+        $json_file = file_get_contents(__DIR__.'/server.json');
+        $json_data = json_decode($json_file, true);
+        if(isset($json_data[$server])) {
+            return $json_data[$server];
+        } else {
+            return null;
+        }
+    }
+
     function getPercent($opIssue, $totalIssue) {
         $p = $opIssue / $totalIssue;
         $progress = $p * 100;
@@ -54,6 +64,21 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                         'state'=>$state,
                         'proj'=> '',
                     );
+                preg_match("/server *= *(['\"])(.*?)\\1/", $match, $server);
+                if (count($server) != 0) {
+                    $server_data = $this->getServerFromJson($server[2]);
+                    if( ! is_null($server_data)){
+                        $data['server_url'] = $server_data['url'];
+                        $data['server_token'] = $server_data['api_token'];
+                    }
+                }
+                if (!isset($data['server_token'])) {
+                    $data['server_token'] = $this->getConf('redproject.API');
+                }
+                if (!isset($data['server_url'])) {
+                    $data['server_url'] = $this->getConf('redproject.url');
+                }
+
                 // Looking for id
                 preg_match("/proj *= *(['\"])(.*?)\\1/", $match, $proj);
                 if( count($proj) != 0 ) {
@@ -76,9 +101,9 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
 
     // Main render_link
     function _render_project($renderer, $data) {
-        $apiKey = ($this->getConf('redproject.API'));
+        $apiKey = $this->getConf('redproject.API');
         $url = $this->getConf('redproject.url');
-        $client = new Redmine\Client($url, $apiKey);
+        $client = new Redmine\Client($data['server_url'], $data['server_token']);
         // Get Id user of the Wiki if Impersonate
         $view = $this->getConf('redproject.view');
         if ($view == self::RI_IMPERSONATE) {
@@ -103,7 +128,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $projDesc = $proj['project']['description'];
             // RENDERER PROJECT INFO
             // Title
-            $renderer->doc .= '<h2 class="title">Projet Redmine</h2>';
+            $renderer->doc .= '<h2 class="title">'.$this->getLang('title').'</h2>';
             if($projHome) {
                $renderer->doc .= '<div class="title">';
                $renderer->doc .= '<a href="'.$projHome.'"><div class="circle">HOME</div></a>';
@@ -128,15 +153,15 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             }
             // DESCRIPTION
             if ($projDesc == ''){
-                $renderer->doc .= '<div class="desc"><h4>Description</h4> <p>'.$this->getLang('description').'</p></div>';
+                $renderer->doc .= '<div class="desc"><h4>'.$this->getLang('desctitle').'</h4> <p>'.$this->getLang('description').'</p></div>';
             } else {
-                $renderer->doc .= '<div class="desc"><h4>Description</h4> <p class="desc"> ' . $projDesc . '</p></div>';
+                $renderer->doc .= '<div class="desc"><h4>'.$this->getLang('desctitle').'</h4> <p class="desc"> ' . $projDesc . '</p></div>';
             }
             // VERSIONS
             $versions = $client->api('version')->all($data['proj']);
             // Parsing Version
             if($versions) {
-                $renderer->doc .= '<div class="version"><h3>Versions</h3>';
+                $renderer->doc .= '<div class="version"><h3>'.$this->getLang('vertitle').'</h3>';
                 $renderer->doc .= '<div class="panel-group" id="version-accordion-nb" role="tablist">';
                 for($i = 0; $i < count($versions['versions']); $i++) {
                     // Begin Accordion
@@ -197,7 +222,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                 }
                 $renderer->doc .= '</div>'; // /.panel-group
             } else {
-                $renderer->doc .= '<div class="version"><h3>Versions</h3>';
+                $renderer->doc .= '<div class="version"><h3>'.$this->getLang('vertitle').'</h3>';
                 $renderer->doc .= $nbVersion . ' versions';
                 $renderer->doc .= 'div class="descver"><p>' . $this->getLang('noversion') . '</p></div>';
             }
@@ -223,7 +248,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $usersByRole = array();
             $members = $client->api('membership')->all($projId);
             // Found each Members
-            for($m = 0; $m <count($members['memberships']); $m++) {
+            for($m = 0; $m < count($members['memberships']); $m++) {
                // $z++;
                 $memberFound = $members['memberships'][$m];
                 $currentUser = $memberFound['user'];
@@ -263,18 +288,23 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $renderer->doc .= '<div class="member">';
             foreach($usersByRole as $role => $currentRole) {
                 $renderer->doc .= '<p class="member">'.$currentRole['name'].' : ';
+                // Define a total to render commas
+                $total = count($currentRole['members']);
                 foreach($currentRole['members'] as $who => $currentUser) {
                     $userId = $currentUser['id'];
                     $mailCurrentUser = $client->api('user')->show($userId);
                     $mailUser = $mailCurrentUser['user']['mail'];
-                    $renderer->doc .= '<a href="mailto:'.$mailUser.'?Subject=Project '.$projName.'"target="_top"><span> '. $currentUser['name'] . '</span></a>' ;
+                    $renderer->doc .= ' <a href="mailto:'.$mailUser.'?Subject=Project '.$projName.'"target="_top"><span>'. $currentUser['name'] . '</span></a>' ;
+                    if ($who < $total - 1) {
+                        $renderer->doc .= ',';
+                    }
                 }
                 $renderer->doc .= '</p>';
             }
             $renderer->doc .= '</div>';
         } else {
-            $renderer->doc .= '<div class="title"><img class="title" src="lib/plugins/redproject/images/home.png">Projet Privé</div><br>';
-            $renderer->doc .= '<div class="desc"><h3>Information</h3>'.$this->getLang('norights').' </p></div>';
+            $renderer->doc .= '<h2 class="title">'.$this->getLang('private').'</h2>';
+            $renderer->doc .= '<div class="desc" style="float: none;"><h3>'.$this->getLang('info').'</h3>'.$this->getLang('norights').' </p></div>';
 
         }
     }

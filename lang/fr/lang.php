@@ -5,6 +5,11 @@
 $lang['encoding']   = 'utf-8';
 $lang['direction']  = 'ltr';
 
+$lang['title']      = 'Projet Redmine';
+$lang['desctitle']  = 'Description';
+$lang['vertitle']   = 'Versions';
+$lang['private']    = 'Projet Privé / Unknown';
+$lang['info']       = 'Information';
 $lang['norights']   = 'Vous ne participer pas à ce projet ou vous n\'avez pas les droits requis pour visualiser ces informations.';
 $lang['mainproj']   = 'Projet Principal';
 $lang['subproject'] = 'Sous projet de :';

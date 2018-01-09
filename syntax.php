@@ -248,7 +248,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $usersByRole = array();
             $members = $client->api('membership')->all($projId);
             // Found each Members
-            for($m = 0; $m <count($members['memberships']); $m++) {
+            for($m = 0; $m < count($members['memberships']); $m++) {
                // $z++;
                 $memberFound = $members['memberships'][$m];
                 $currentUser = $memberFound['user'];
@@ -288,11 +288,16 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $renderer->doc .= '<div class="member">';
             foreach($usersByRole as $role => $currentRole) {
                 $renderer->doc .= '<p class="member">'.$currentRole['name'].' : ';
+                // Define a total to render commas
+                $total = count($currentRole['members']);
                 foreach($currentRole['members'] as $who => $currentUser) {
                     $userId = $currentUser['id'];
                     $mailCurrentUser = $client->api('user')->show($userId);
                     $mailUser = $mailCurrentUser['user']['mail'];
-                    $renderer->doc .= '<a href="mailto:'.$mailUser.'?Subject=Project '.$projName.'"target="_top"><span> '. $currentUser['name'] . '</span></a>' ;
+                    $renderer->doc .= ' <a href="mailto:'.$mailUser.'?Subject=Project '.$projName.'"target="_top"><span>'. $currentUser['name'] . '</span></a>' ;
+                    if ($who < $total - 1) {
+                        $renderer->doc .= ',';
+                    }
                 }
                 $renderer->doc .= '</p>';
             }

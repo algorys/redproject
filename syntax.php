@@ -128,7 +128,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             $projDesc = $proj['project']['description'];
             // RENDERER PROJECT INFO
             // Title
-            $renderer->doc .= '<h2 class="title">Projet Redmine</h2>';
+            $renderer->doc .= '<h2 class="title">'.$this->getLang('title').'</h2>';
             if($projHome) {
                $renderer->doc .= '<div class="title">';
                $renderer->doc .= '<a href="'.$projHome.'"><div class="circle">HOME</div></a>';
@@ -153,15 +153,15 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             }
             // DESCRIPTION
             if ($projDesc == ''){
-                $renderer->doc .= '<div class="desc"><h4>Description</h4> <p>'.$this->getLang('description').'</p></div>';
+                $renderer->doc .= '<div class="desc"><h4>'.$this->getLang('desctitle').'</h4> <p>'.$this->getLang('description').'</p></div>';
             } else {
-                $renderer->doc .= '<div class="desc"><h4>Description</h4> <p class="desc"> ' . $projDesc . '</p></div>';
+                $renderer->doc .= '<div class="desc"><h4>'.$this->getLang('desctitle').'</h4> <p class="desc"> ' . $projDesc . '</p></div>';
             }
             // VERSIONS
             $versions = $client->api('version')->all($data['proj']);
             // Parsing Version
             if($versions) {
-                $renderer->doc .= '<div class="version"><h3>Versions</h3>';
+                $renderer->doc .= '<div class="version"><h3>'.$this->getLang('vertitle').'</h3>';
                 $renderer->doc .= '<div class="panel-group" id="version-accordion-nb" role="tablist">';
                 for($i = 0; $i < count($versions['versions']); $i++) {
                     // Begin Accordion
@@ -222,7 +222,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                 }
                 $renderer->doc .= '</div>'; // /.panel-group
             } else {
-                $renderer->doc .= '<div class="version"><h3>Versions</h3>';
+                $renderer->doc .= '<div class="version"><h3>'.$this->getLang('vertitle').'</h3>';
                 $renderer->doc .= $nbVersion . ' versions';
                 $renderer->doc .= 'div class="descver"><p>' . $this->getLang('noversion') . '</p></div>';
             }
@@ -298,8 +298,8 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             }
             $renderer->doc .= '</div>';
         } else {
-            $renderer->doc .= '<div class="title"><img class="title" src="lib/plugins/redproject/images/home.png">Projet Privé</div><br>';
-            $renderer->doc .= '<div class="desc"><h3>Information</h3>'.$this->getLang('norights').' </p></div>';
+            $renderer->doc .= '<h2 class="title">'.$this->getLang('private').'</h2>';
+            $renderer->doc .= '<div class="desc" style="float: none;"><h3>'.$this->getLang('info').'</h3>'.$this->getLang('norights').' </p></div>';
 
         }
     }

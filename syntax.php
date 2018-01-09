@@ -39,6 +39,16 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
         $this->Lexer->addExitPattern('</redproject>', 'plugin_redproject');
     }
 
+    function getServerFromJson($server) {
+        $json_file = file_get_contents(__DIR__.'/server.json');
+        $json_data = json_decode($json_file, true);
+        if(isset($json_data[$server])) {
+            return $json_data[$server];
+        } else {
+            return null;
+        }
+    }
+
     function getPercent($opIssue, $totalIssue) {
         $p = $opIssue / $totalIssue;
         $progress = $p * 100;
@@ -54,6 +64,21 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                         'state'=>$state,
                         'proj'=> '',
                     );
+                preg_match("/server *= *(['\"])(.*?)\\1/", $match, $server);
+                if (count($server) != 0) {
+                    $server_data = $this->getServerFromJson($server[2]);
+                    if( ! is_null($server_data)){
+                        $data['server_url'] = $server_data['url'];
+                        $data['server_token'] = $server_data['api_token'];
+                    }
+                }
+                if (!isset($data['server_token'])) {
+                    $data['server_token'] = $this->getConf('redproject.API');
+                }
+                if (!isset($data['server_url'])) {
+                    $data['server_url'] = $this->getConf('redproject.url');
+                }
+
                 // Looking for id
                 preg_match("/proj *= *(['\"])(.*?)\\1/", $match, $proj);
                 if( count($proj) != 0 ) {
@@ -76,9 +101,9 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
 
     // Main render_link
     function _render_project($renderer, $data) {
-        $apiKey = ($this->getConf('redproject.API'));
+        $apiKey = $this->getConf('redproject.API');
         $url = $this->getConf('redproject.url');
-        $client = new Redmine\Client($url, $apiKey);
+        $client = new Redmine\Client($data['server_url'], $data['server_token']);
         // Get Id user of the Wiki if Impersonate
         $view = $this->getConf('redproject.view');
         if ($view == self::RI_IMPERSONATE) {

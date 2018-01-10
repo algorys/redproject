@@ -181,7 +181,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                     // Time Entries
                     $createdOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['created_on']);
                     $updatedOn = DateTime::createFromFormat(DateTime::ISO8601, $foundVersion['updated_on']);
-                    $renderer->doc .= '<p><b>Description :</b> '.$foundVersion['description'].'</p>';
+                    $renderer->doc .= '<p><b>'.$this->getLang('desctitle').' :</b> '.$foundVersion['description'].'</p>';
                     $renderer->doc .= '<p><a href="'.$data['server_url'].'/versions/'.$versionId.'">See this version in redmine</a></p>';
                     $renderer->doc .= '<p><b>'.$this->getLang('createdon').'</b>'.$createdOn->format(DateTime::RFC850).'</p>';
                     $renderer->doc .= '<p><b>'.$this->getLang('updatedon').'</b>'.$updatedOn->format(DateTime::RFC850).'</p>';
@@ -204,13 +204,13 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                     $progress = $this->getPercent($diffIssue,$issueTotal['total_count']);
                     // renderer Progressbar
                     $renderer->doc .= '<span class="col-md-3">';
-                    $renderer->doc .= '<a href="'.$data['server_url'].'/projects/'.$projIdent.'/issues">'.$issueTotal['total_count'].' issues ('.$diffIssue.' closed - '.$issueOpen['total_count'].' open)</a>';
+                    $renderer->doc .= '<a href="'.$data['server_url'].'/projects/'.$projIdent.'/issues">'.$issueTotal['total_count'].$this->getLang('issues').' ('.$diffIssue.$this->getLang('closed').'- '.$issueOpen['total_count'].$this->getLang('open').')</a>';
                     $renderer->doc .= '</span>'; // /.col-md-3
                     $renderer->doc .= '<span class="col-md-6">';
                     $renderer->doc .= '<div class="progress">';
                     $renderer->doc .= '<span class="progress-bar" role="progressbar" aria-valuenow="70"
   aria-valuemin="0" aria-valuemax="100" style="width:'.$progress.'%">';
-                    $renderer->doc .= '<span class="doku">'.$progress.'% Complete</span>';
+                    $renderer->doc .= '<span class="doku">'.$progress.'% </span>';
                     $renderer->doc .= '</span></div>'; // ./progress
                     $renderer->doc .= '</span>'; // ./col-md-6
                     $renderer->doc .= '</div>'; // /.panel-body
@@ -221,7 +221,7 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
                 $renderer->doc .= '</div>'; // /.panel-group
             } else {
                 $renderer->doc .= '<div class="version"><h3>'.$this->getLang('vertitle').'</h3>';
-                $renderer->doc .= $nbVersion . ' versions';
+                $renderer->doc .= $nbVersion . ' '.$this->getLang('version');
                 $renderer->doc .= 'div class="descver"><p>' . $this->getLang('noversion') . '</p></div>';
             }
             $renderer->doc .= '</div>';
@@ -270,12 +270,12 @@ class syntax_plugin_redproject extends DokuWiki_Syntax_Plugin {
             // Stats
             $renderer->doc .= '<div class="stats">';
             if($projParent == ''){
-                $renderer->doc .= '<p>'.$this->getLang('mainproj').'</p>'; 
+                $renderer->doc .= '<p><b>'.$this->getLang('mainproj').'</b></p>'; 
             } else {
                 $renderer->doc .= '<p>'.$this->getLang('subproject').' <a href="'.$data['server_url'].'/projects/'.$parentIdent.'">'.$nameParent.'</a></p>';
             }
-            $renderer->doc .= '<p>'.$this->getLang('tversion').'<span class="label label-info">'.$nbVersion.'</span>'.$this->getLang('vversion').'</p>';
-            $renderer->doc .= '<p><span class="label label-success">'. $issueTotal['total_count'].'</span>'.$this->getLang('issues').'<span class="label label-warning">'.$issueOpen['total_count'].'</span>'.$this->getLang('open').'</p>'; 
+            $renderer->doc .= '<p>'.$this->getLang('tversion').'<span class="label label-info">'.$nbVersion.'</span>'.$this->getLang('version').',</p>';
+            $renderer->doc .= '<p><span class="label label-success">'. $issueTotal['total_count'].'</span>'.$this->getLang('issuesincl').'<span class="label label-warning">'.$issueOpen['total_count'].'</span>'.$this->getLang('openand').'</p>'; 
             $renderer->doc .= '<p><span class="label label-info">'.$m.'</span>'.$this->getLang('membdetail').'</p>';
             $renderer->doc .= '</div>'; // /.stats
             $renderer->doc .= '</div>'; // /.details
